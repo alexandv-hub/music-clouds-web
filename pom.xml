@@ -15,6 +15,7 @@
         <module>clients</module>
         <module>eureka-server-service</module>
         <module>notification-service</module>
+        <module>apigw</module>
     </modules>
 
     <properties>

@@ -33,4 +33,4 @@ export const links = [
   { name: 'Top Charts', to: '/top-charts', icon: HiOutlineHashtag },
 ];
 
-export const SERVER_URL = 'http://localhost:8080/';
+export const SERVER_URL = 'http://localhost:8000/';
