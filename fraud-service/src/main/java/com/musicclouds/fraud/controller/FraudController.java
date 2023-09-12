@@ -1,6 +1,6 @@
 package com.musicclouds.fraud.controller;
 
-import com.musicclouds.user.fraud.FraudCheckResponse;
+import com.musicclouds.clients.fraud.FraudCheckResponse;
 import com.musicclouds.fraud.service.FraudCheckService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

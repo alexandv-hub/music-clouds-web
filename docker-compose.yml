@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   postgres:
     container_name: music_clouds
@@ -7,12 +9,18 @@ services:
       POSTGRES_PASSWORD: password
       PGDATA: /data/postgres
     volumes:
-      - postgres:/data/music_clouds
+      - postgres:/data/postgres
     ports:
       - "5432:5432"
     networks:
       - postgres
     restart: unless-stopped
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
 
 networks:
   postgres:

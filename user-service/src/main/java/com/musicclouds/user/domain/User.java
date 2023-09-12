@@ -23,7 +23,7 @@ public class User {
             strategy = GenerationType.SEQUENCE,
             generator = "user_id_sequence"
     )
-    private Long id;
+    private Integer id;
 
     private String firstName;
     private String lastName;

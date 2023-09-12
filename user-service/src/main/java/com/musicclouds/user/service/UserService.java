@@ -1,10 +1,14 @@
 package com.musicclouds.user.service;
 
+import com.musicclouds.clients.fraud.FraudCheckResponse;
+import com.musicclouds.clients.fraud.FraudClient;
+import com.musicclouds.clients.notification.NotificationClient;
+import com.musicclouds.clients.notification.NotificationRequest;
 import com.musicclouds.user.domain.User;
-
 import com.musicclouds.user.dto.UserRegistrationRequest;
 import com.musicclouds.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,8 +17,11 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@EnableFeignClients(basePackages = "com.musicclouds.clients")
 public class UserService {
     private final UserRepository userRepository;
+    private final NotificationClient notificationClient;
+    private final FraudClient fraudClient;
 
     public void registerUser(UserRegistrationRequest request) {
         User user = User.builder()
@@ -27,6 +34,24 @@ public class UserService {
         // todo: check if email not taken
         userRepository.saveAndFlush(user);
 
+        // todo: check if fraudster
+        FraudCheckResponse fraudCheckResponse =
+                fraudClient.isFraudster(user.getId());
+
+        assert fraudCheckResponse != null;
+        if (fraudCheckResponse.isFraudster()) {
+            throw new IllegalStateException("fraudster");
+        }
+
+        // todo: make it async. i.e add to queue
+        notificationClient.sendNotification(
+                new NotificationRequest(
+                        user.getId(),
+                        user.getEmail(),
+                        String.format("Hi %s, welcome to Music-Clouds...",
+                                user.getFirstName())
+                )
+        );
     }
 
     public List<User> getAllUsers() {
@@ -37,7 +62,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User getUser(Long id) {
+    public User getUser(Integer id) {
         return userRepository.getReferenceById(Math.toIntExact(id));
     }
 

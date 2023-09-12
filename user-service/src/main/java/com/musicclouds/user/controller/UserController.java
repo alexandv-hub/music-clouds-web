@@ -25,12 +25,13 @@ public class UserController {
 
     @PostMapping("/register")
     public void registerUser(@RequestBody UserRegistrationRequest userRegistrationRequest) {
-        log.info("new user registration {}", userRegistrationRequest);
+        log.info("New user registration {}", userRegistrationRequest);
         userService.registerUser(userRegistrationRequest);
     }
 
     @GetMapping
     public List<EntityModel<User>> getUsers() {
+        log.info("Starting getUsers()...");
         List<User> users = userService.getAllUsers();
         List<EntityModel<User>> resources = new ArrayList<>();
         for (User user : users) {
@@ -42,7 +43,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public EntityModel<User> getUser(@PathVariable Long id) {
+    public EntityModel<User> getUser(@PathVariable Integer id) {
+        log.info("Starting getUser({})...", id);
         User user = userService.getUser(id);
         EntityModel<User> resource = EntityModel.of(user);
         resource.add(linkTo(methodOn(UserController.class).getUser(id)).withSelfRel());
@@ -51,12 +53,14 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
+        log.info("Starting deleteUser({})...", id);
         userService.deleteUserById(id);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+        log.info("Starting updateUser({})...", id);
         return userService.updateUser(id, updatedUser)
                 .map(user -> ResponseEntity.ok().body(user))
                 .orElse(ResponseEntity.notFound().build());
