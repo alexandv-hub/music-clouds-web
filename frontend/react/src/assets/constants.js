@@ -4,7 +4,7 @@ import {
   HiOutlineLogin,
   HiOutlinePhotograph,
   HiOutlineUserGroup,
-  HiOutlineUsers
+  HiOutlineUsers,
 } from 'react-icons/hi';
 
 export const genres = [
@@ -25,9 +25,12 @@ export const genres = [
 ];
 
 export const links = [
-  { name: 'Sign in', to: '/signin', icon: HiOutlineLogin },
+  { name: 'Users management', to: '/users-management', icon: HiOutlineUsers },
+  { name: 'Sign in', to: '/sign-in', icon: HiOutlineLogin },
   { name: 'Discover', to: '/discover', icon: HiOutlineHome },
   { name: 'Around You', to: '/around-you', icon: HiOutlinePhotograph },
   { name: 'Top Artists', to: '/top-artists', icon: HiOutlineUserGroup },
   { name: 'Top Charts', to: '/top-charts', icon: HiOutlineHashtag },
 ];
+
+export const SERVER_URL = 'http://localhost:8080/';

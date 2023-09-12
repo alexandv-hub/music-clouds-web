@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { HiOutlineMenu } from 'react-icons/hi';
 import { RiCloseLine } from 'react-icons/ri';
@@ -25,10 +25,14 @@ const NavLinks = (handleClick) => (
 const Sidebar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleLogoClick = () => {
+    window.location.href = '/sign-in';
+  };
+
   return (
     <>
       <div className="md:flex hidden flex-col w-[240px] py-10 px-4 bg-[#474451]">
-        <img src={logo} alt="logo" className="w-full h-20 object-contain" />
+        <img src={logo} alt="logo" className="w-full h-20 object-contain cursor-pointer" onClick={handleLogoClick} />
         <NavLinks />
       </div>
 

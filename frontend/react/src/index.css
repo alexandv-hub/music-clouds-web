@@ -7,6 +7,12 @@
   color: rgb(108,163,64);
 }
 
+.musicCloudsCustomGreen {
+  background-color: rgb(108,163,64);
+  color: white;
+  /* any other styles you want */
+}
+
 .active svg {
   color: rgb(108,163,64);
 }

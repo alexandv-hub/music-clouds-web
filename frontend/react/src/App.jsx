@@ -1,21 +1,43 @@
 import { useSelector } from 'react-redux';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 
+import React, { useEffect, useState } from 'react';
 import { Searchbar, Sidebar, MusicPlayer, TopPlay } from './components';
-import { ArtistDetails, TopArtists, AroundYou, SignIn, Discover, Search, SongDetails, TopCharts } from './pages';
+import { ArtistDetails, TopArtists, AroundYou, Discover, Search, SongDetails, TopCharts, SignUp } from './pages';
+import UsersManagement from './pages/admin/UsersManagement';
+import SignIn from './pages/SignIn';
 
 const App = () => {
   const { activeSong } = useSelector((state) => state.player);
+  const location = useLocation();
+  const [isUsersManagementActive, setIsUsersManagementActive] = useState(false);
+
+  useEffect(() => {
+    if (location.pathname === '/users-management'
+        || location.pathname === '/sign-in'
+        || location.pathname === '/sign-up'
+        || location.pathname === '/add-user') {
+      setIsUsersManagementActive(true);
+    } else {
+      setIsUsersManagementActive(false);
+    }
+  }, [location]);
 
   return (
     <div className="relative flex">
       <Sidebar />
       <div className="flex-1 flex flex-col bg-gradient-to-br from-black to-[#434355]">
-        <Searchbar />
+
+        {!isUsersManagementActive && (
+        <div className="xl:sticky relative top-0 h-fit">
+          <Searchbar />
+        </div>
+        )}
 
         <div className="px-6 h-[calc(100vh-72px)] overflow-y-scroll hide-scrollbar flex xl:flex-row flex-col-reverse">
           <div className="flex-1 h-fit pb-40">
             <Routes>
+              <Route path="/" element={<SignIn />} />
               <Route path="/discover" element={<Discover />} />
               <Route path="/top-artists" element={<TopArtists />} />
               <Route path="/top-charts" element={<TopCharts />} />
@@ -23,12 +45,17 @@ const App = () => {
               <Route path="/artists/:id" element={<ArtistDetails />} />
               <Route path="/songs/:songid" element={<SongDetails />} />
               <Route path="/search/:searchTerm" element={<Search />} />
-              <Route path="/signin" element={<SignIn />} />
+              <Route path="/users-management" element={<UsersManagement />} />
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/sign-up" element={<SignUp />} />
             </Routes>
           </div>
+
+          {!isUsersManagementActive && (
           <div className="xl:sticky relative top-0 h-fit">
             <TopPlay />
           </div>
+          )}
         </div>
       </div>
 

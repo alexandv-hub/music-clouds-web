@@ -5,6 +5,7 @@ module.exports = {
     extend: {
       colors: {
         black: '#191624',
+        musicCloudsCustomGreen: 'rgb(108,163,64)',
       },
       animation: {
         slideup: 'slideup 1s ease-in-out',
