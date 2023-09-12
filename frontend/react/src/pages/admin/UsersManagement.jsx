@@ -25,6 +25,7 @@ function CustomToolbar() {
 function UsersManagement() {
   const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const fetchUsers = () => {
     fetch(`${SERVER_URL}api/v1/users`)
@@ -50,7 +51,10 @@ function UsersManagement() {
     )
       .then((response) => {
         if (response.ok) {
+          console.log(response);
           fetchUsers();
+          setOpen(true);
+          setSnackbarMessage('User updated');
         } else {
           alert('Something went wrong!');
         }
@@ -64,8 +68,10 @@ function UsersManagement() {
       fetch(url, { method: 'DELETE' })
         .then((response) => {
           if (response.ok) {
+            console.log(response);
             fetchUsers();
             setOpen(true);
+            setSnackbarMessage('User deleted');
           } else {
             alert('Something went wrong!');
           }
@@ -108,11 +114,12 @@ function UsersManagement() {
 
   // Add a new user
   const addUser = (user) => {
-    console.log('ADD USER ', user);
+    console.log('ADD USER ', user, SERVER_URL, 'api/v1/users/register');
     fetch(
       `${SERVER_URL}api/v1/users/register`,
       {
         method: 'POST',
+        // mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
       },
@@ -120,6 +127,8 @@ function UsersManagement() {
       .then((response) => {
         if (response.ok) {
           fetchUsers();
+          setOpen(true); // open snackbar
+          setSnackbarMessage('User created');
         } else {
           alert('Something went wrong!');
         }
@@ -149,9 +158,9 @@ function UsersManagement() {
       </div>
       <Snackbar
         open={open}
-        autoHideDuration={2000}
+        autoHideDuration={3000}
         onClose={() => setOpen(false)}
-        message="User deleted"
+        message={snackbarMessage}
       />
     </>
   );
