@@ -1,0 +1,16 @@
+# Ignore common build artifacts and logs
+#node_modules/
+*.log
+
+# Ignore IDE specific files
+*.iml
+.idea/
+*.vscode/
+
+.git/
+
+# Ignore IDE specific files
+frontend-react.iml
+
+# Ignore OS specific files
+.DS_Store

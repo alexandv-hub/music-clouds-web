@@ -1,0 +1,14 @@
+# Ignore common build artifacts and logs
+# Ignore everything in target
+target/*
+# But allow JAR files
+!target/*.jar
+*.log
+
+# Ignore IDE specific files
+*.iml
+.idea/
+*.vscode/
+
+# Ignore OS specific files
+.DS_Store

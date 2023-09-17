@@ -1,12 +1,18 @@
 server:
+  address: @app-server-address@
   port: 8080
+
+frontend-react:
+#  user-service-url: @frontend-react.user-service-url@
+  user-service-url: http://localhost:8000/
+
 spring:
   application:
     name: user-service
   datasource:
     username: username
     password: password
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://@postgres.hostname@:5432/postgres
   jpa:
     hibernate:
       ddl-auto: update
@@ -19,15 +25,8 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://@eureka-server-service.hostname@:8761/eureka
     fetch-registry: true
     register-with-eureka: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: 'prometheus,info,health'
-  tracing:
-    sampling:
-      probability: 1.0
+#  instance:
+#    prefer-ip-address: @eureka-instance-prefer-ip-address.boolean@

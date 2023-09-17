@@ -3,8 +3,9 @@ package com.musicclouds.user.controller;
 import com.musicclouds.user.domain.User;
 import com.musicclouds.user.dto.UserRegistrationRequest;
 import com.musicclouds.user.service.UserService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Slf4j
 @RestController
 @RequestMapping("api/v1/users")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserController {
+
+    @Value("${frontend-react.user-service-url}")
+    private String API_GATEWAY_URL;
 
     private final UserService userService;
 
@@ -36,7 +40,9 @@ public class UserController {
         List<EntityModel<User>> resources = new ArrayList<>();
         for (User user : users) {
             EntityModel<User> resource = EntityModel.of(user);
-            resource.add(linkTo(methodOn(UserController.class).getUser(user.getId())).withSelfRel());
+            resource.add(linkTo(methodOn(UserController.class).getUser(user.getId()))
+                    .withSelfRel()
+                    .withHref(API_GATEWAY_URL + "api/v1/users/" + user.getId()));
             resources.add(resource);
         }
         return resources;
@@ -47,7 +53,9 @@ public class UserController {
         log.info("Starting getUser({})...", id);
         User user = userService.getUser(id);
         EntityModel<User> resource = EntityModel.of(user);
-        resource.add(linkTo(methodOn(UserController.class).getUser(id)).withSelfRel());
+        resource.add(linkTo(methodOn(UserController.class).getUser(id))
+                .withSelfRel()
+                .withHref(API_GATEWAY_URL + "api/v1/users/" + id));
         return resource;
     }
 

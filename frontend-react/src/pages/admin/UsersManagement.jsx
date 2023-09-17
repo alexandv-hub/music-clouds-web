@@ -7,7 +7,7 @@ import { Stack, Snackbar, IconButton } from '@mui/material/';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 // Import server url (named import)
-import { SERVER_URL } from '../../assets/constants.js';
+import { REACT_APP_SERVER_URL } from '../../assets/constants.js';
 
 import AddUser from './AddUser';
 import EditUser from './EditUser';
@@ -28,7 +28,7 @@ function UsersManagement() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const fetchUsers = () => {
-    fetch(`${SERVER_URL}api/v1/users`)
+    fetch(`${REACT_APP_SERVER_URL}api/v1/users`)
       .then((response) => response.json())
       .then((data) => setUsers(data))
       .catch((err) => console.error(err));
@@ -40,7 +40,7 @@ function UsersManagement() {
 
   // Update user
   const updateUser = (user, link) => {
-    console.log('UPDATE USER PUT ', user, link);
+    console.log('starting UPDATE USER PUT... ', user, link);
     fetch(
       link,
       {
@@ -55,6 +55,7 @@ function UsersManagement() {
           fetchUsers();
           setOpen(true);
           setSnackbarMessage('User updated');
+          console.log('successful UPDATE USER PUT ', user, link);
         } else {
           alert('Something went wrong!');
         }
@@ -62,8 +63,9 @@ function UsersManagement() {
       .catch((err) => console.error(err));
   };
 
+  // Delete user
   const onDelClick = (url) => {
-    console.log(`DELETE ${url}`);
+    console.log(`starting DELETE... ${url}`);
     if (window.confirm('Are you sure to delete?')) {
       fetch(url, { method: 'DELETE' })
         .then((response) => {
@@ -72,6 +74,7 @@ function UsersManagement() {
             fetchUsers();
             setOpen(true);
             setSnackbarMessage('User deleted');
+            console.log(`successful DELETE ${url}`);
           } else {
             alert('Something went wrong!');
           }
@@ -114,12 +117,11 @@ function UsersManagement() {
 
   // Add a new user
   const addUser = (user) => {
-    console.log('ADD USER ', user, SERVER_URL, 'api/v1/users/register');
+    console.log('starting ADD USER... ', user, 'api/v1/users/register');
     fetch(
-      `${SERVER_URL}api/v1/users/register`,
+      `${REACT_APP_SERVER_URL}api/v1/users/register`,
       {
         method: 'POST',
-        // mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
       },
@@ -129,6 +131,7 @@ function UsersManagement() {
           fetchUsers();
           setOpen(true); // open snackbar
           setSnackbarMessage('User created');
+          console.log('successful ADD USER ', user, 'api/v1/users/register');
         } else {
           alert('Something went wrong!');
         }

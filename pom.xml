@@ -4,6 +4,45 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <name>Music Clouds Web (demo)</name>
+    <description>Music Clouds is a microservices-based music streaming platform designed to provide seamless music listening experience.</description>
+    <url>https://www.music-clouds.com</url>
+
+    <groupId>com.music-clouds</groupId>
+    <artifactId>music-clouds-web</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <profiles>
+        <profile>
+            <id>localhost</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <postgres.hostname>localhost</postgres.hostname>
+                <eureka-server-service.hostname>localhost</eureka-server-service.hostname>
+                <app-server-address></app-server-address>
+                <eureka-instance-prefer-ip-address.boolean>false</eureka-instance-prefer-ip-address.boolean>
+<!--                <frontend-react.user-service-url>http://localhost:8000/</frontend-react.user-service-url>-->
+            </properties>
+        </profile>
+
+        <profile>
+            <id>dev-docker</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <postgres.hostname>music_clouds_db</postgres.hostname>
+                <eureka-server-service.hostname>eureka-server-service</eureka-server-service.hostname>
+                <app-server-address>0.0.0.0</app-server-address>
+                <eureka-instance-prefer-ip-address.boolean>true</eureka-instance-prefer-ip-address.boolean>
+<!--                <frontend-react.user-service-url>http://apigw-service:8000/</frontend-react.user-service-url>-->
+            </properties>
+        </profile>
+    </profiles>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -11,18 +50,13 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.music-clouds</groupId>
-    <artifactId>music-clouds-web</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-
     <modules>
         <module>user-service</module>
         <module>fraud-service</module>
         <module>clients</module>
         <module>eureka-server-service</module>
         <module>notification-service</module>
-        <module>apigw</module>
+        <module>apigw-service</module>
         <module>frontend-react</module>
     </modules>
 
@@ -61,30 +95,13 @@
             <version>${lombok.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-            <plugins>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -33,4 +33,4 @@ export const links = [
   { name: 'Top Charts', to: '/top-charts', icon: HiOutlineHashtag },
 ];
 
-export const SERVER_URL = 'http://localhost:8000/';
+export const REACT_APP_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL || 'default_value';

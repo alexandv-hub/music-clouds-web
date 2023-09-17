@@ -32,7 +32,7 @@
                         </goals>
                         <configuration>
                             <nodeVersion>v20.5.1</nodeVersion> <!-- Use the version you need -->
-                            <npmVersion>9.8.0</npmVersion>   <!-- Use the version you need -->
+                            <npmVersion>10.1.0</npmVersion>   <!-- Use the version you need -->
                         </configuration>
                     </execution>
                     <execution>
@@ -57,7 +57,33 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- This deletes folders when you run mvn clean -->
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>dist</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>node</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/application.yml</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
 </project>
