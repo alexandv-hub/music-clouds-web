@@ -8,6 +8,8 @@
         <option value="$PROJECT_DIR$/user-service/pom.xml" />
         <option value="$PROJECT_DIR$/apigw/pom.xml" />
         <option value="$PROJECT_DIR$/frontend-react/pom.xml" />
+        <option value="$PROJECT_DIR$/eureka-server-service/pom.xml" />
+        <option value="$PROJECT_DIR$/clients/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

@@ -24,5 +24,3 @@ eureka:
       defaultZone: http://@eureka-server-service.hostname@:8761/eureka
     fetch-registry: true
     register-with-eureka: true
-#  instance:
-#    prefer-ip-address: @eureka-instance-prefer-ip-address.boolean@

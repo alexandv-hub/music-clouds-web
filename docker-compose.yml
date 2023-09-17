@@ -26,6 +26,12 @@ services:
 
   apigw-service:
     build: ./apigw-service
+    # distributed tracing env variables
+    environment:
+      - OTEL_SERVICE_NAME=apigw-service
+      - OTEL_METRICS_EXPORTER=none
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
     ports:
       - "8000:8000"
     depends_on:
@@ -34,7 +40,15 @@ services:
       - my-docker-network
 
   user-service:
-    build: ./user-service
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    # distributed tracing env variables
+    environment:
+      - OTEL_SERVICE_NAME=user-service
+      - OTEL_METRICS_EXPORTER=none
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
     ports:
       - "8080:8080"
     depends_on:
@@ -54,7 +68,15 @@ services:
       - my-docker-network
 
   fraud-service:
-    build: ./fraud-service
+    build:
+      context: ./fraud-service
+      dockerfile: Dockerfile
+    # distributed tracing env variables
+    environment:
+      - OTEL_SERVICE_NAME=fraud-service
+      - OTEL_METRICS_EXPORTER=none
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
     ports:
       - "8081:8081"
     depends_on:
@@ -65,13 +87,31 @@ services:
       - my-docker-network
 
   notification-service:
-    build: ./notification-service
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    # distributed tracing env variables
+    environment:
+      - OTEL_SERVICE_NAME=notification-service
+      - OTEL_METRICS_EXPORTER=none
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
     ports:
       - "8082:8082"
     depends_on:
       - postgres
       - eureka-server-service
       - apigw-service
+    networks:
+      - my-docker-network
+
+  # distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "4318:4318"
+      - "16686:16686"
     networks:
       - my-docker-network
 
