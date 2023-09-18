@@ -1,6 +1,8 @@
 server:
   address: @app-server-address@
   port: 8080
+  error:
+    include-message: always
 
 frontend-react:
 #  user-service-url: @frontend-react.user-service-url@
@@ -15,12 +17,15 @@ spring:
     url: jdbc:postgresql://@postgres.hostname@:5432/postgres
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+  # should be used when you want to save initial db data
+#  flyway:
+#    baseline-on-migrate: true
 
 eureka:
   client:
@@ -31,4 +36,4 @@ eureka:
 
 logging:
   level:
-    root: debug
+    root: info

@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+    public ResponseEntity<?> updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
         log.info("Starting updateUser({})...", id);
         return userService.updateUser(id, updatedUser)
                 .map(user -> ResponseEntity.ok().body(user))

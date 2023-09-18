@@ -29,9 +29,17 @@ function UsersManagement() {
 
   const fetchUsers = () => {
     fetch(`${REACT_APP_SERVER_URL}api/v1/users`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
       .then((data) => setUsers(data))
-      .catch((err) => console.error(err));
+      .catch((error) => {
+        console.error('There was a problem with the fetch operation:', error.message);
+        alert('Something went wrong!');
+      });
   };
 
   useEffect(() => {
@@ -50,17 +58,22 @@ function UsersManagement() {
       },
     )
       .then((response) => {
-        if (response.ok) {
-          console.log(response);
-          fetchUsers();
-          setOpen(true);
-          setSnackbarMessage('User updated');
-          console.log('successful UPDATE USER PUT ', user, link);
-        } else {
-          alert('Something went wrong!');
+        console.log(response);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
+        return response.json();
       })
-      .catch((err) => console.error(err));
+      .then((data) => {
+        fetchUsers();
+        setOpen(true);
+        setSnackbarMessage('User updated');
+        console.log('successful UPDATE USER PUT ', user, link);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert('Something went wrong!');
+      });
   };
 
   // Delete user
@@ -127,16 +140,30 @@ function UsersManagement() {
       },
     )
       .then((response) => {
-        if (response.ok) {
-          fetchUsers();
-          setOpen(true); // open snackbar
-          setSnackbarMessage('User created');
-          console.log('successful ADD USER ', user, 'api/v1/users/register');
-        } else {
-          alert('Something went wrong!');
+        console.log('response: ', response);
+        if (!response.ok) {
+          console.error('response: ', response);
+          throw new Error('Network response was not ok');
         }
+
+        // Check if response is empty
+        if (response.status === 204
+            || response.headers.get('content-length') === '0'
+            || !response.headers.get('content-type').includes('application/json')) {
+          return null;
+        }
+        return response.json();
       })
-      .catch((err) => console.error(err));
+      .then((data) => {
+        fetchUsers();
+        setOpen(true); // open snackbar
+        setSnackbarMessage('User created');
+        console.log('successful ADD USER ', user, 'api/v1/users/register');
+      })
+      .catch((err) => {
+        console.error(err);
+        alert('Something went wrong!');
+      });
   };
 
   return (
