@@ -11,7 +11,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "_user")
+@Table(
+        name = "_user",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "user_email_unique",
+                        columnNames = "email"
+                )
+        }
+)
 public class User {
     @Id
     @SequenceGenerator(
@@ -25,8 +33,16 @@ public class User {
     )
     private Integer id;
 
+    @Column(nullable = false)
     private String firstName;
+
+    @Column(nullable = false)
     private String lastName;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String username;
+
 }

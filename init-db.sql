@@ -1,0 +1,3 @@
+CREATE DATABASE _user;
+CREATE DATABASE notification;
+CREATE DATABASE fraud;

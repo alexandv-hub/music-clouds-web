@@ -8,10 +8,10 @@ spring:
   datasource:
     username: username
     password: password
-    url: jdbc:postgresql://@postgres.hostname@:5432/postgres
+    url: jdbc:postgresql://@postgres.hostname@:5432/fraud
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

@@ -7,27 +7,45 @@ import com.musicclouds.clients.notification.NotificationRequest;
 import com.musicclouds.exception.DuplicateResourceException;
 import com.musicclouds.exception.RequestValidationException;
 import com.musicclouds.exception.ResourceNotFoundException;
+import com.musicclouds.user.dao.UserDao;
 import com.musicclouds.user.domain.User;
 import com.musicclouds.user.dto.UserRegistrationRequest;
 import com.musicclouds.user.dto.UserUpdateRequest;
-import com.musicclouds.user.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 @EnableFeignClients(basePackages = "com.musicclouds.clients")
 public class UserService {
-    private final UserRepository userRepository;
-    private final NotificationClient notificationClient;
+    private final UserDao userDao;
     private final FraudClient fraudClient;
+    private final NotificationClient notificationClient;
+
+    // Constructor
+    public UserService(@Qualifier("jpa") UserDao userDao,
+                       FraudClient fraudClient,
+                       NotificationClient notificationClient) {
+        this.userDao = userDao;
+        this.fraudClient = fraudClient;
+        this.notificationClient = notificationClient;
+    }
+
+    public List<User> getAllUsers() {
+        return userDao.selectAllUsers();
+    }
+
+    public User getUser(Integer id) {
+        return userDao.selectUserById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "user with id [%s] not found".formatted(id)
+                ));
+    }
 
     public void registerUser(UserRegistrationRequest request) {
         // check if email not empty
@@ -47,7 +65,7 @@ public class UserService {
         }
 
         // check if email not taken
-        if (userRepository.existsUserByEmail(request.email())) {
+        if (userDao.existsPersonWithEmail(request.email())) {
             log.error("email already taken!");
 
             throw new DuplicateResourceException(
@@ -62,7 +80,7 @@ public class UserService {
                 .username(request.username())
                 .build();
 
-        userRepository.saveAndFlush(user);
+        userDao.insertUser(user);
 
         // todo: check if fraudster
         FraudCheckResponse fraudCheckResponse =
@@ -88,51 +106,40 @@ public class UserService {
         return email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
     }
 
-    public List<User> getAllUsers() {
-        return new ArrayList<>(userRepository.findAll());
-    }
-
     public void deleteUserById(Integer id) {
-        userRepository.deleteById(id);
+        userDao.deleteUserById(id);
     }
 
-    public User getUser(Integer id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "user with id [%s] not found".formatted(id)
-                ));
-    }
-
-    public Optional<User> updateUser(Integer id, User updatedUser) {
+    public Optional<User> updateUser(Integer id, UserUpdateRequest userUpdateRequest) {
 
         // TODO: for JPA use .getReferenceById(userId) as it does does not bring object into memory and instead a reference
         User user = getUser(id);
 
         boolean changes = false;
 
-        if (user.getEmail() != null && !updatedUser.getEmail().equals(user.getEmail())) {
-            if (userRepository.existsUserByEmail(updatedUser.getEmail())) {
-                log.error("email already taken! ({})...", updatedUser.getEmail());
+        if (user.getEmail() != null && !userUpdateRequest.email().equals(user.getEmail())) {
+            if (userDao.existsPersonWithEmail(userUpdateRequest.email())) {
+                log.error("email already taken! ({})...", userUpdateRequest.email());
                 throw new DuplicateResourceException(
                         "email already taken!"
                 );
             }
-            user.setEmail(updatedUser.getEmail());
+            user.setEmail(userUpdateRequest.email());
             changes = true;
         }
 
-        if (user.getFirstName() != null && !updatedUser.getFirstName().equals(user.getFirstName())) {
-            user.setFirstName(updatedUser.getFirstName());
+        if (user.getFirstName() != null && !userUpdateRequest.firstName().equals(user.getFirstName())) {
+            user.setFirstName(userUpdateRequest.firstName());
             changes = true;
         }
 
-        if (user.getLastName() != null && !updatedUser.getLastName().equals(user.getLastName())) {
-            user.setLastName(updatedUser.getLastName());
+        if (user.getLastName() != null && !userUpdateRequest.lastName().equals(user.getLastName())) {
+            user.setLastName(userUpdateRequest.lastName());
             changes = true;
         }
 
-        if (user.getUsername() != null && !updatedUser.getUsername().equals(user.getUsername())) {
-            user.setUsername(updatedUser.getUsername());
+        if (user.getUsername() != null && !userUpdateRequest.username().equals(user.getUsername())) {
+            user.setUsername(userUpdateRequest.username());
             changes = true;
         }
 
@@ -141,74 +148,15 @@ public class UserService {
             throw new RequestValidationException("no data changes found");
         }
 
-        return userRepository.findById(id).map(usr -> {
-            usr.setFirstName(updatedUser.getFirstName());
-            usr.setLastName(updatedUser.getLastName());
-            usr.setEmail(updatedUser.getEmail());
-            usr.setUsername(updatedUser.getUsername());
+        return userDao.selectUserById(id).map(usr -> {
+            usr.setFirstName(userUpdateRequest.firstName());
+            usr.setLastName(userUpdateRequest.lastName());
+            usr.setEmail(userUpdateRequest.email());
+            usr.setUsername(userUpdateRequest.username());
             // add other fields here
-            return userRepository.save(usr);
+
+            return userDao.updateUser(usr);
         });
     }
 
-    public void updateUser(Integer userId,
-                               UserUpdateRequest updateRequest) {
-        // TODO: for JPA use .getReferenceById(userId) as it does does not bring object into memory and instead a reference
-        User user = getUser(userId);
-
-        boolean changes = false;
-
-        if (updateRequest.email() != null && !updateRequest.email().equals(user.getEmail())) {
-            if (userRepository.existsUserByEmail(updateRequest.email())) {
-                log.error("email already taken");
-                throw new DuplicateResourceException(
-                        "email already taken"
-                );
-            }
-            user.setEmail(updateRequest.email());
-            changes = true;
-        }
-
-        if (updateRequest.firstName() != null && !updateRequest.firstName().equals(user.getFirstName())) {
-            user.setFirstName(updateRequest.firstName());
-            changes = true;
-        }
-
-        if (updateRequest.lastName() != null && !updateRequest.lastName().equals(user.getLastName())) {
-            user.setLastName(updateRequest.firstName());
-            changes = true;
-        }
-
-        if (updateRequest.username() != null && !updateRequest.username().equals(user.getUsername())) {
-            user.setUsername(updateRequest.username());
-            changes = true;
-        }
-
-        if (!changes) {
-            log.error("no data changes found");
-            throw new RequestValidationException("no data changes found");
-        }
-        userRepository.save(user);
-    }
-
-    public void addUser(UserRegistrationRequest userRegistrationRequest) {
-        // check if email exists
-        String email = userRegistrationRequest.email();
-        if (userRepository.existsUserByEmail(email)) {
-            log.error("email already taken!");
-            throw new DuplicateResourceException(
-                    "email already taken!"
-            );
-        }
-
-        // add
-        User user = new User(
-                userRegistrationRequest.firstName(),
-                userRegistrationRequest.lastName(),
-                userRegistrationRequest.email(),
-                userRegistrationRequest.username()
-        );
-
-        userRepository.save(user);
-    }
 }

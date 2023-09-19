@@ -2,6 +2,7 @@ package com.musicclouds.user.controller;
 
 import com.musicclouds.user.domain.User;
 import com.musicclouds.user.dto.UserRegistrationRequest;
+import com.musicclouds.user.dto.UserUpdateRequest;
 import com.musicclouds.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class UserController {
     public void registerUser(@RequestBody UserRegistrationRequest userRegistrationRequest) {
         log.info("New user registration {}", userRegistrationRequest);
         userService.registerUser(userRegistrationRequest);
+        log.info("Successfully registered new user with email {}", userRegistrationRequest.email());
     }
 
     @GetMapping
@@ -63,14 +65,18 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
         log.info("Starting deleteUser({})...", id);
         userService.deleteUserById(id);
+        log.info("Successfully deleted user with id {}", id);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
+    public ResponseEntity<?> updateUser(@PathVariable Integer id, @RequestBody UserUpdateRequest userUpdateRequest) {
         log.info("Starting updateUser({})...", id);
-        return userService.updateUser(id, updatedUser)
-                .map(user -> ResponseEntity.ok().body(user))
+        return userService.updateUser(id, userUpdateRequest)
+                .map(user -> {
+                    log.info("Successfully updated user with id {}", id);
+                    return ResponseEntity.ok().body(user);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 

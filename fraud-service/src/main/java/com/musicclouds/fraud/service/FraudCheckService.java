@@ -14,14 +14,18 @@ public class FraudCheckService {
     private final FraudCheckHistoryRepository fraudCheckHistoryRepository;
 
     public boolean isFraudulentUser(Integer userId) {
+
+        boolean isFraudster = false;
+        // todo: add the check if a user is fraudulent or not
+
         fraudCheckHistoryRepository.save(
                 FraudCheckHistory.builder()
                         .userId(userId)
-                        .isFraudster(false)
+                        .isFraudster(isFraudster)
                         .createdAt(LocalDateTime.now())
                         .build()
         );
-        return false;
+        return isFraudster;
     }
 
 }
