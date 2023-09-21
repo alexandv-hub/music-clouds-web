@@ -1,15 +1,14 @@
 package com.musicclouds.user.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(
         name = "_user",
@@ -24,7 +23,7 @@ public class User {
     @Id
     @SequenceGenerator(
             name = "user_id_sequence",
-            sequenceName = "user_id_sequence",
+            sequenceName = "_user_id_seq", // because postgres creates these automatically as "_user_id_seq"
             allocationSize = 1
     )
     @GeneratedValue(
@@ -33,16 +32,23 @@ public class User {
     )
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(nullable = false)
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "username", nullable = false)
     private String username;
+
+    public User(String firstName, String lastName, String email, String username) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.username = username;
+    }
 
 }

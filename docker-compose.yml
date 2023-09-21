@@ -7,8 +7,9 @@ services:
     environment:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
-    volumes:
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    # this volumes setting is used only at initial start (simply creates required databases)
+#    volumes:
+#      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
       - "5432:5432"
     restart: unless-stopped
