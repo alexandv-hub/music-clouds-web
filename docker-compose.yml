@@ -8,8 +8,8 @@ services:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
     # this volumes setting is used only at initial start (simply creates required databases)
-#    volumes:
-#      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
       - "5432:5432"
     restart: unless-stopped
@@ -20,6 +20,16 @@ services:
     build: ./eureka-server-service
     ports:
       - "8761:8761"
+    networks:
+      - my-docker-network
+
+  # distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "4318:4318"
+      - "16686:16686"
     networks:
       - my-docker-network
 
@@ -101,16 +111,6 @@ services:
       - postgres
       - eureka-server-service
       - apigw-service
-    networks:
-      - my-docker-network
-
-  # distributed tracing
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: jaeger
-    ports:
-      - "4318:4318"
-      - "16686:16686"
     networks:
       - my-docker-network
 

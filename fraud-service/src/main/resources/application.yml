@@ -9,14 +9,22 @@ spring:
     username: username
     password: password
     url: jdbc:postgresql://@postgres.hostname@:5432/fraud
+  ## Hibernate properties
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+  ## Flyway properties
+  flyway:
+    enabled: true
+    # uncomment these 3 lines at initial setup (should be used when you want to save initial db data)
+#    baseline-on-migrate: true
+#    baseline-description: init
+#    baseline-version: 0
 
 eureka:
   client:
@@ -24,3 +32,10 @@ eureka:
       defaultZone: http://@eureka-server-service.hostname@:8761/eureka
     fetch-registry: true
     register-with-eureka: true
+
+logging:
+  level:
+    root: info
+    org:
+      flywaydb:
+        core: DEBUG
