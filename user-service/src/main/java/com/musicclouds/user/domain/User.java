@@ -16,6 +16,10 @@ import lombok.*;
                 @UniqueConstraint(
                         name = "user_email_unique",
                         columnNames = "email"
+                ),
+                @UniqueConstraint(
+                        name = "user_username_unique",
+                        columnNames = "username"
                 )
         }
 )
