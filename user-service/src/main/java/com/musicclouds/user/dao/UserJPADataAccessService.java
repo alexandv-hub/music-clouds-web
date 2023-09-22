@@ -27,6 +27,11 @@ public class UserJPADataAccessService implements UserDao {
     }
 
     @Override
+    public Optional<User> selectUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
     public void insertUser(User user) {
         userRepository.save(user);
     }
@@ -49,6 +54,11 @@ public class UserJPADataAccessService implements UserDao {
     @Override
     public User updateUser(User update) {
         return userRepository.save(update);
+    }
+
+    @Override
+    public boolean existsPersonWithUsername(String username) {
+        return userRepository.existsUserByUsername(username);
     }
 
 }

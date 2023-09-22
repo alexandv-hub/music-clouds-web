@@ -28,9 +28,9 @@ public class UserService {
     private final NotificationClient notificationClient;
 
     // Constructor
-    public UserService(@Qualifier("jpa") UserDao userDao,
-                       FraudClient fraudClient,
-                       NotificationClient notificationClient) {
+    public UserService(@Qualifier("jdbc") UserDao userDao,
+                                          FraudClient fraudClient,
+                                          NotificationClient notificationClient) {
         this.userDao = userDao;
         this.fraudClient = fraudClient;
         this.notificationClient = notificationClient;
@@ -73,6 +73,15 @@ public class UserService {
             );
         }
 
+        // check if username not taken
+        if (userDao.existsPersonWithUsername(request.username())) {
+            log.error("username already taken!");
+
+            throw new DuplicateResourceException(
+                    "username already taken!"
+            );
+        }
+
         User user = User.builder()
                 .firstName(request.firstName())
                 .lastName(request.lastName())
@@ -83,8 +92,12 @@ public class UserService {
         userDao.insertUser(user);
 
         // todo: check if fraudster
+        Optional<User> savedUserOptional = userDao.selectUserByEmail(user.getEmail());
+        Integer userId = savedUserOptional
+                .orElseThrow(() -> new ResourceNotFoundException("User not found for email: " + user.getEmail()))
+                .getId();
         FraudCheckResponse fraudCheckResponse =
-                fraudClient.isFraudster(user.getId());
+                fraudClient.isFraudster(userId);
 
         assert fraudCheckResponse != null;
         if (fraudCheckResponse.isFraudster()) {
@@ -94,7 +107,7 @@ public class UserService {
         // todo: make it async. i.e add to queue
         notificationClient.sendNotification(
                 new NotificationRequest(
-                        user.getId(),
+                        userId,
                         user.getEmail(),
                         String.format("Hi %s, welcome to Music-Clouds...",
                                 user.getFirstName())
