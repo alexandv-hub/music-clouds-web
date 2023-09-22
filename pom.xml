@@ -22,9 +22,6 @@
             <properties>
                 <postgres.hostname>localhost</postgres.hostname>
                 <eureka-server-service.hostname>localhost</eureka-server-service.hostname>
-                <app-server-address></app-server-address>
-                <eureka-instance-prefer-ip-address.boolean>false</eureka-instance-prefer-ip-address.boolean>
-<!--                <frontend-react.user-service-url>http://localhost:8000/</frontend-react.user-service-url>-->
             </properties>
         </profile>
 
@@ -36,8 +33,6 @@
             <properties>
                 <postgres.hostname>music_clouds_db</postgres.hostname>
                 <eureka-server-service.hostname>eureka-server-service</eureka-server-service.hostname>
-                <app-server-address>0.0.0.0</app-server-address>
-                <eureka-instance-prefer-ip-address.boolean>true</eureka-instance-prefer-ip-address.boolean>
             </properties>
         </profile>
     </profiles>
