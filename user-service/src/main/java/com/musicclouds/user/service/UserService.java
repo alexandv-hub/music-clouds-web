@@ -65,7 +65,7 @@ public class UserService {
         }
 
         // check if email not taken
-        if (userDao.existsPersonWithEmail(request.email())) {
+        if (userDao.existsUserWithEmail(request.email())) {
             log.error("email already taken!");
 
             throw new DuplicateResourceException(
@@ -74,7 +74,7 @@ public class UserService {
         }
 
         // check if username not taken
-        if (userDao.existsPersonWithUsername(request.username())) {
+        if (userDao.existsUserWithUsername(request.username())) {
             log.error("username already taken!");
 
             throw new DuplicateResourceException(
@@ -131,7 +131,7 @@ public class UserService {
         boolean changes = false;
 
         if (user.getEmail() != null && !userUpdateRequest.email().equals(user.getEmail())) {
-            if (userDao.existsPersonWithEmail(userUpdateRequest.email())) {
+            if (userDao.existsUserWithEmail(userUpdateRequest.email())) {
                 log.error("email already taken! ({})...", userUpdateRequest.email());
                 throw new DuplicateResourceException(
                         "email already taken!"

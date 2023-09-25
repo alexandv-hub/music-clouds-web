@@ -71,7 +71,7 @@ public class UserJDBCDataAccessService implements UserDao {
     }
 
     @Override
-    public boolean existsPersonWithEmail(String email) {
+    public boolean existsUserWithEmail(String email) {
         var sql = """
                 SELECT count(id)
                 FROM _user
@@ -82,7 +82,7 @@ public class UserJDBCDataAccessService implements UserDao {
     }
 
     @Override
-    public boolean existsPersonWithId(Integer id) {
+    public boolean existsUserWithId(Integer id) {
         var sql = """
                 SELECT count(id)
                 FROM _user
@@ -147,7 +147,7 @@ public class UserJDBCDataAccessService implements UserDao {
     }
 
     @Override
-    public boolean existsPersonWithUsername(String username) {
+    public boolean existsUserWithUsername(String username) {
         var sql = """
                 SELECT count(id)
                 FROM _user

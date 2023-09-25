@@ -37,12 +37,12 @@ public class UserJPADataAccessService implements UserDao {
     }
 
     @Override
-    public boolean existsPersonWithEmail(String email) {
+    public boolean existsUserWithEmail(String email) {
         return userRepository.existsUserByEmail(email);
     }
 
     @Override
-    public boolean existsPersonWithId(Integer id) {
+    public boolean existsUserWithId(Integer id) {
         return userRepository.existsUserById(id);
     }
 
@@ -57,7 +57,7 @@ public class UserJPADataAccessService implements UserDao {
     }
 
     @Override
-    public boolean existsPersonWithUsername(String username) {
+    public boolean existsUserWithUsername(String username) {
         return userRepository.existsUserByUsername(username);
     }
 
