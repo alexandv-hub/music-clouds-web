@@ -73,6 +73,15 @@ public class UserService {
             );
         }
 
+        // check if username text field not empty
+        if (request.username().isEmpty()) {
+            log.error("username text field is empty!");
+
+            throw new RequestValidationException(
+                    "username text field is empty!"
+            );
+        }
+
         // check if username not taken
         if (userDao.existsUserWithUsername(request.username())) {
             log.error("username already taken!");
@@ -119,8 +128,13 @@ public class UserService {
         return email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
     }
 
-    public void deleteUserById(Integer id) {
-        userDao.deleteUserById(id);
+    public void deleteUserById(Integer userId) {
+        if (!userDao.existsUserWithId(userId)) {
+            throw new ResourceNotFoundException(
+                    "user with id [%s] not found".formatted(userId)
+            );
+        }
+        userDao.deleteUserById(userId);
     }
 
     public Optional<User> updateUser(Integer id, UserUpdateRequest userUpdateRequest) {

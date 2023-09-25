@@ -18,7 +18,7 @@ public class NotificationService {
         notificationRepository.save(
                 Notification.builder()
                         .toUserId(notificationRequest.toUserId())
-                        .toUserEmail(notificationRequest.toUserName())
+                        .toUserEmail(notificationRequest.toUserEmail())
                         .sender("Music-Clouds")
                         .message(notificationRequest.message())
                         .sentAt(LocalDateTime.now())
