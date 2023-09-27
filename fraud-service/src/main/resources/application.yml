@@ -22,9 +22,9 @@ spring:
   flyway:
     enabled: true
     # uncomment these 3 lines at initial setup (should be used when you want to save initial db data)
-#    baseline-on-migrate: true
-#    baseline-description: init
-#    baseline-version: 0
+    baseline-on-migrate: true
+    baseline-description: init
+    baseline-version: 0
 
 eureka:
   client:

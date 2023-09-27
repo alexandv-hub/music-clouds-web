@@ -118,7 +118,7 @@ public class UserJDBCDataAccessService implements UserDao {
             String sql = "UPDATE _user SET last_name = ? WHERE id = ?";
             int result = jdbcTemplate.update(
                     sql,
-                    update.getFirstName(),
+                    update.getLastName(),
                     update.getId()
             );
             System.out.println("update _user last_name result = " + result);

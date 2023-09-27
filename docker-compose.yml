@@ -1,8 +1,7 @@
 version: '3.8'
 
 services:
-  postgres:
-    container_name: music_clouds_db
+  music_clouds_db:
     image: postgres:latest
     environment:
       POSTGRES_USER: username
@@ -61,7 +60,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-        - postgres
+        - music_clouds_db
         - eureka-server-service
         - apigw-service
     networks:
@@ -89,7 +88,7 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - postgres
+      - music_clouds_db
       - eureka-server-service
       - apigw-service
     networks:
@@ -108,7 +107,7 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      - postgres
+      - music_clouds_db
       - eureka-server-service
       - apigw-service
     networks:

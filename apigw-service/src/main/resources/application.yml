@@ -8,10 +8,15 @@ spring:
     cloud:
        gateway:
           routes:
-            - id: user
+            - id: user-service
               uri: lb://USER-SERVICE
               predicates:
                 - Path=/api/v1/users/**
+
+            - id: fraud-service
+              uri: lb://FRAUD-SERVICE
+              predicates:
+                - Path=/api/v1/fraud-check/**
           default-filters:
             - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
           globalcors:

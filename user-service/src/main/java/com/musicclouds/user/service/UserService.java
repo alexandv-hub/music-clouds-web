@@ -21,7 +21,6 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@EnableFeignClients(basePackages = "com.musicclouds.clients")
 public class UserService {
     private final UserDao userDao;
     private final FraudClient fraudClient;
@@ -105,11 +104,17 @@ public class UserService {
         Integer userId = savedUserOptional
                 .orElseThrow(() -> new ResourceNotFoundException("User not found for email: " + user.getEmail()))
                 .getId();
-        FraudCheckResponse fraudCheckResponse =
-                fraudClient.isFraudster(userId);
+        FraudCheckResponse fraudCheckResponse = null;
+        try {
+            fraudCheckResponse = fraudClient.isFraudster(userId);
+        } catch (Exception e) {
+            log.error("Error calling fraud service for userId: " + userId, e);
+            // Handle the exception appropriately
+        }
 
-        assert fraudCheckResponse != null;
-        if (fraudCheckResponse.isFraudster()) {
+        // Handle the response
+        if (fraudCheckResponse != null
+                && fraudCheckResponse.isFraudster()) {
             throw new IllegalStateException("fraudster");
         }
 
