@@ -61,6 +61,13 @@ public class UserController {
         return resource;
     }
 
+    @GetMapping("/id/{id}")
+    public ResponseEntity<User> getUserObjectById(@PathVariable Integer id) {
+        log.info("Starting getUserObjectById({})...", id);
+        User user = userService.getUser(id);
+        return ResponseEntity.ok(user);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
         log.info("Starting deleteUser({})...", id);

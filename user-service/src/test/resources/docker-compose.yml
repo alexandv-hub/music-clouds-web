@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  music_clouds_db_test:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    # this volumes setting is used only at initial start (simply creates required databases)
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - my-docker-network
+
+  eureka-server-service:
+    image: music-clouds-web-eureka-server-service
+    ports:
+      - "8761:8761"
+    networks:
+      - my-docker-network
+
+networks:
+  my-docker-network:
+    driver: bridge
