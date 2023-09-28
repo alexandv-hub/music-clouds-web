@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import { DialogActions, DialogContent, DialogTitle, Button, IconButton, Stack, TextField } from '@mui/material/';
 import EditIcon from '@mui/icons-material/Edit';
+import {InputLabel, MenuItem, Select} from "@mui/material";
 
 function EditUser(props) {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState({
-    firstName: '', lastName: '', email: '', username: '',
+    firstName: '', lastName: '', email: '', username: '', age: '', gender: '',
   });
 
   // Open the modal form and update the user state
@@ -16,6 +17,8 @@ function EditUser(props) {
       lastName: props.data.row.lastName,
       email: props.data.row.email,
       username: props.data.row.username,
+      age: props.data.row.age,
+      gender: props.data.row.gender,
     });
     setOpen(true);
   };
@@ -73,6 +76,24 @@ function EditUser(props) {
               value={user.username}
               onChange={handleChange}
             />
+            <TextField
+              label="age"
+              name="age"
+              variant="standard"
+              value={user.age}
+              onChange={handleChange}
+            />
+            <InputLabel id="gender-label">Gender</InputLabel>
+            <Select
+              labelId="gender-label"
+              label="Gender"
+              name="gender"
+              value={user.gender}
+              onChange={handleChange}
+            >
+              <MenuItem value={"Male"}>Male</MenuItem>
+              <MenuItem value={"Female"}>Female</MenuItem>
+            </Select>
           </Stack>
           <br />
         </DialogContent>

@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.mockito.Mockito.verify;
 
@@ -51,15 +52,21 @@ class UserJPADataAccessServiceTest extends AbstractTestcontainers {
         verify(userRepository).findById(id);
     }
 
-    @Test
-    void insertUser() {
-        // Given
-        User user = new User(
+    private User getUserFakeExample() {
+        return new User(
                 FAKER.name().firstName(),
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
-                FAKER.name().username()
+                FAKER.name().username(),
+                ThreadLocalRandom.current().nextInt(18, 100),
+                FAKER.options().option("Male", "Female")
         );
+    }
+
+    @Test
+    void insertUser() {
+        // Given
+        User user = getUserFakeExample();
 
         // When
         underTest.insertUser(user);
@@ -107,12 +114,7 @@ class UserJPADataAccessServiceTest extends AbstractTestcontainers {
     @Test
     void updateUser() {
         // Given
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
 
         // When
         underTest.updateUser(user);

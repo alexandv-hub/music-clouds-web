@@ -48,11 +48,19 @@ public class User {
     @Column(name = "username", nullable = false)
     private String username;
 
-    public User(String firstName, String lastName, String email, String username) {
+    @Column(name = "age", nullable = false)
+    private Integer age;
+
+    @Column(name = "gender", nullable = false)
+    private String gender;
+
+    public User(String firstName, String lastName, String email, String username, Integer age, String gender) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.username = username;
+        this.age = age;
+        this.gender = gender;
     }
 
 }

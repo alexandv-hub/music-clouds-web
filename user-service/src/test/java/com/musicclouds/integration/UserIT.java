@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,9 +75,11 @@ public class UserIT {
         String lastName = fakerName.lastName();
         String email = fakerName.lastName() + "-" + UUID.randomUUID() + "@amigoscode.com";
         String username = fakerName.username();
+        Integer age = ThreadLocalRandom.current().nextInt(18, 100);
+        String gender = faker.options().option("Male", "Female");
 
         UserRegistrationRequest request = new UserRegistrationRequest(
-                firstName, lastName, email, username
+                firstName, lastName, email, username, age, gender
         );
 
         configureMocks();
@@ -136,9 +139,11 @@ public class UserIT {
         String lastName = fakerName.lastName();
         String email = fakerName.lastName() + "-" + UUID.randomUUID() + "@amigoscode.com";
         String username = fakerName.username();
+        Integer age = ThreadLocalRandom.current().nextInt(18, 100);
+        String gender = faker.options().option("Male", "Female");
 
         UserRegistrationRequest request = new UserRegistrationRequest(
-                firstName, lastName, email, username
+                firstName, lastName, email, username, age, gender
         );
 
         configureMocks();
@@ -176,7 +181,7 @@ public class UserIT {
         String newFirstName = "Ali";
 
         UserUpdateRequest updateRequest = new UserUpdateRequest(
-                newFirstName, lastName, email, username
+                newFirstName, lastName, email, username, age, gender
         );
 
         webTestClient.put()
@@ -200,7 +205,7 @@ public class UserIT {
                 .getResponseBody();
 
         User expected = new User(
-                newFirstName, lastName, email, username
+                newFirstName, lastName, email, username, age, gender
         );
 
         assertThat(updatedUser).isEqualTo(expected);
@@ -216,9 +221,11 @@ public class UserIT {
         String lastName = fakerName.lastName();
         String email = fakerName.lastName() + "-" + UUID.randomUUID() + "@amigoscode.com";
         String username = fakerName.username();
+        Integer age = ThreadLocalRandom.current().nextInt(18, 100);
+        String gender = faker.options().option("Male", "Female");
 
         UserRegistrationRequest request = new UserRegistrationRequest(
-                firstName, lastName, email, username
+                firstName, lastName, email, username, age, gender
         );
 
         configureMocks();
@@ -247,7 +254,7 @@ public class UserIT {
 
         // make sure that user is present
         User expectedUser = new User(
-                firstName, lastName, email, username
+                firstName, lastName, email, username, age, gender
         );
 
         assertThat(allUsers)

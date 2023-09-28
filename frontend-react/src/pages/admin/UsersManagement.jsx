@@ -102,6 +102,8 @@ function UsersManagement() {
     { field: 'lastName', headerName: 'lastName', width: 150 },
     { field: 'email', headerName: 'email', width: 150 },
     { field: 'username', headerName: 'username', width: 150 },
+    { field: 'age', headerName: 'age', width: 80 },
+    { field: 'gender', headerName: 'gender', width: 80 },
     {
       field: 'links[0].user.href',
       headerName: '',

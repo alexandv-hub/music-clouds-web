@@ -25,13 +25,21 @@ class UserRowMapperTest extends AbstractTestcontainers {
         when(resultSet.getString("last_name")).thenReturn("Jason");
         when(resultSet.getString("email")).thenReturn("jamila@gmail.com");
         when(resultSet.getString("username")).thenReturn("Jamila19");
+        when(resultSet.getInt("age")).thenReturn(19);
+        when(resultSet.getString("gender")).thenReturn("Female");
 
         // When
         User actual = userRowMapper.mapRow(resultSet, 1);
 
         // Then
         User expected = new User(
-                1, "Jamila", "Jason", "jamila@gmail.com", "Jamila19"
+                1,
+                "Jamila",
+                "Jason",
+                "jamila@gmail.com",
+                "Jamila19",
+                19,
+                "Female"
         );
         assertThat(actual).isEqualTo(expected);
     }

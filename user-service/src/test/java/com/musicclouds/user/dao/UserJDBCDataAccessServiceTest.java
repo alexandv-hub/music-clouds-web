@@ -3,12 +3,14 @@ package com.musicclouds.user.dao;
 import com.musicclouds.user.AbstractTestcontainers;
 import com.musicclouds.user.domain.User;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,12 +31,8 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
     @Test
     void selectAllUsers() {
         // Given
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
+
         underTest.insertUser(user);
         log.info(user.toString());
 
@@ -45,16 +43,23 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
         assertThat(actual).isNotEmpty();
     }
 
+    @NotNull
+    private static User getUserFakeExample() {
+        return new User(
+                FAKER.name().firstName(),
+                FAKER.name().lastName(),
+                FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
+                FAKER.name().username(),
+                ThreadLocalRandom.current().nextInt(18, 100),
+                FAKER.options().option("Male", "Female")
+        );
+    }
+
     @Test
     void selectUserById() {
         // Given
-        String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
+        String email = user.getEmail();
 
         underTest.insertUser(user);
 
@@ -93,13 +98,8 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
     @Test
     void existsUserWithEmail() {
         // Given
-        String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
+        String email = user.getEmail();
 
         underTest.insertUser(user);
 
@@ -125,13 +125,8 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
     @Test
     void existsUserWithId() {
         // Given
-        String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
+        String email = user.getEmail();
 
         underTest.insertUser(user);
 
@@ -164,13 +159,8 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
     @Test
     void deleteUserById() {
         // Given
-        String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
+        String email = user.getEmail();
 
         underTest.insertUser(user);
 
@@ -192,13 +182,8 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
     @Test
     void updateUsername() {
         // Given
-        String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
+        String email = user.getEmail();
 
         underTest.insertUser(user);
 
@@ -233,13 +218,8 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
     @Test
     void updateUserEmail() {
         // Given
-        String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
+        String email = user.getEmail();
 
         underTest.insertUser(user);
 
@@ -274,13 +254,8 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
     @Test
     void willUpdateAllPropertiesUser() {
         // Given
-        String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
+        String email = user.getEmail();
 
         underTest.insertUser(user);
 
@@ -299,6 +274,14 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
         update.setEmail(UUID.randomUUID().toString());
         update.setUsername(UUID.randomUUID().toString());
 
+        int generatedAge;
+        do {
+            generatedAge = ThreadLocalRandom.current().nextInt(18, 100);
+        } while (generatedAge == user.getAge());
+        update.setAge(generatedAge);
+
+        update.setGender(user.getGender().equals("Male") ? "Female" : "Male");
+
         underTest.updateUser(update);
 
         // Then
@@ -310,13 +293,8 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
     @Test
     void willNotUpdateWhenNothingToUpdate() {
         // Given
-        String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
+        String email = user.getEmail();
 
         underTest.insertUser(user);
 

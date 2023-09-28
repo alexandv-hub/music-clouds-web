@@ -11,6 +11,7 @@ import com.musicclouds.user.dao.UserDao;
 import com.musicclouds.user.domain.User;
 import com.musicclouds.user.dto.UserRegistrationRequest;
 import com.musicclouds.user.dto.UserUpdateRequest;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,13 +56,36 @@ class UserServiceTest {
         verify(userDao).selectAllUsers();
     }
 
+    @NotNull
+    private static UserRegistrationRequest getUserRegistrationRequestExample() {
+        return new UserRegistrationRequest(
+                "John",
+                "Doe",
+                "john.doe@example.com",
+                "johndoe",
+                35,
+                "Male"
+        );
+    }
+
+    @NotNull
+    private static User getUserExample() {
+        return new User(
+                10,
+                "Alex",
+                "Jason",
+                "alex@gmail.com",
+                "Jason23",
+                23,
+                "Male");
+    }
+
     @Test
     void canGetUser() {
         // Given
-        int id = 10;
-        User user = new User(
-                id, "Alex","Jason", "alex@gmail.com", "Jason23"
-        );
+        User user = getUserExample();
+        int id = user.getId(); // 10
+
         when(userDao.selectUserById(id)).thenReturn(Optional.of(user));
 
         // When
@@ -87,15 +111,15 @@ class UserServiceTest {
     @Test
     void canRegisterUser() {
         // Given
-        UserRegistrationRequest request = new UserRegistrationRequest(
-                "John", "Doe", "john.doe@example.com", "johndoe"
-        );
+        UserRegistrationRequest request = getUserRegistrationRequestExample();
 
         User user = User.builder()
                 .firstName("John")
                 .lastName("Doe")
                 .email("john.doe@example.com")
                 .username("johndoe")
+                .age(35)
+                .gender("Male")
                 .build();
 
         when(userDao.existsUserWithEmail(anyString())).thenReturn(false);
@@ -129,7 +153,12 @@ class UserServiceTest {
     void shouldThrowExceptionWhenEmailFieldIsEmpty() {
         // Given
         UserRegistrationRequest request = new UserRegistrationRequest(
-                "John", "Doe", "", "johndoe"
+                "John",
+                "Doe",
+                "", // empty email
+                "johndoe",
+                30,
+                "Male"
         );
 
         // Then
@@ -141,9 +170,7 @@ class UserServiceTest {
     @Test
     void shouldThrowExceptionWhenEmailIsTaken() {
         // Given
-        UserRegistrationRequest request = new UserRegistrationRequest(
-                "John", "Doe", "john.doe@example.com", "johndoe"
-        );
+        UserRegistrationRequest request = getUserRegistrationRequestExample();
 
         when(userDao.existsUserWithEmail(request.email())).thenReturn(true);
 
@@ -157,7 +184,12 @@ class UserServiceTest {
     void shouldThrowExceptionWhenEmailIsNotValid() {
         // Given
         UserRegistrationRequest request = new UserRegistrationRequest(
-                "John", "Doe", "john@email999", "johndoe"
+                "John",
+                "Doe",
+                "john@email999", // invalid email
+                "johndoe",
+                35,
+                "Male"
         );
 
         // Then
@@ -170,7 +202,12 @@ class UserServiceTest {
     void shouldThrowExceptionWhenUsernameFieldIsEmpty() {
         // Given
         UserRegistrationRequest request = new UserRegistrationRequest(
-                "John", "Doe", "john.doe@example.com", ""
+                "John",
+                "Doe",
+                "john.doe@example.com",
+                "", // empty username
+                35,
+                "Male"
         );
 
         // Then
@@ -182,9 +219,7 @@ class UserServiceTest {
     @Test
     void shouldThrowExceptionWhenUsernameIsTaken() {
         // Given
-        UserRegistrationRequest request = new UserRegistrationRequest(
-                "John", "Doe", "john.doe@example.com", "johndoe"
-        );
+        UserRegistrationRequest request = getUserRegistrationRequestExample();
 
         when(userDao.existsUserWithUsername(request.username())).thenReturn(true);
 
@@ -227,17 +262,25 @@ class UserServiceTest {
     @Test
     void canUpdateAllUsersProperties() {
         // Given
-        int id = 10;
-        User user = new User(id, "Alex", "Jason", "alex@gmail.com", "Jason23");
+        User user = getUserExample();
+        int id = user.getId(); // 10
+
         when(userDao.selectUserById(id)).thenReturn(Optional.of(user));
 
         String newEmail = "alexandro@gmail.com";
         String newFirstName = "Alexandro";
         String newLastName = "Jacobson";
         String newUsername = "Jacobson555";
+        Integer newAge = 25;
+        String newGender = "Male";
 
         UserUpdateRequest updateRequest = new UserUpdateRequest(
-                newFirstName, newLastName, newEmail, newUsername);
+                newFirstName,
+                newLastName,
+                newEmail,
+                newUsername,
+                newAge,
+                newGender);
 
         when(userDao.existsUserWithEmail(newEmail)).thenReturn(false);
 
@@ -250,7 +293,14 @@ class UserServiceTest {
         User capturedUser = userArgumentCaptor.getValue();
 
         // Here we are creating an expected User object with the updated properties
-        User expectedUser = new User(id, newFirstName, newLastName, newEmail, newUsername);
+        User expectedUser = new User(
+                id,
+                newFirstName,
+                newLastName,
+                newEmail,
+                newUsername,
+                newAge,
+                newGender);
 
         // And here we are comparing the captured user to the expected user
         assertThat(capturedUser)
@@ -262,22 +312,19 @@ class UserServiceTest {
     @Test
     void canUpdateOnlyUserName() {
         // Given
-        int id = 10;
-        User user = new User(
-                id,
-                "Alex",
-                "Jason",
-                "alex@gmail.com",
-                "Jason23");
+        User user = getUserExample();
+        int id = user.getId(); // 10
 
         when(userDao.selectUserById(id)).thenReturn(Optional.of(user));
 
         String newFirstName = "Alexandro";
         UserUpdateRequest updateRequest = new UserUpdateRequest(
-                newFirstName,
+                newFirstName, // new
                 user.getLastName(),
                 user.getEmail(),
-                user.getUsername());
+                user.getUsername(),
+                user.getAge(),
+                user.getGender());
 
         // When
         underTest.updateUser(id, updateRequest);
@@ -290,10 +337,12 @@ class UserServiceTest {
         // Create expected user
         User expectedUser = new User(
                 id,
-                newFirstName,
+                newFirstName, // new
                 user.getLastName(),
                 user.getEmail(),
-                user.getUsername());
+                user.getUsername(),
+                user.getAge(),
+                user.getGender());
 
         // Compare capturedUser with expectedUser
         assertThat(capturedUser)
@@ -304,13 +353,8 @@ class UserServiceTest {
     @Test
     void willThrowWhenTryingToUpdateUserEmailWhenAlreadyTaken() {
         // Given
-        int id = 10;
-        User user = new User(
-                id,
-                "Alex",
-                "Jason",
-                "alex@gmail.com",
-                "Jason23");
+        User user = getUserExample();
+        int id = user.getId(); // 10
 
         when(userDao.selectUserById(id)).thenReturn(Optional.of(user));
 
@@ -318,8 +362,10 @@ class UserServiceTest {
         UserUpdateRequest updateRequest = new UserUpdateRequest(
                 user.getFirstName(),
                 user.getLastName(),
-                newEmail,
-                user.getUsername());
+                newEmail, // new
+                user.getUsername(),
+                user.getAge(),
+                user.getGender());
 
         when(userDao.existsUserWithEmail(newEmail)).thenReturn(true);
 
@@ -332,13 +378,8 @@ class UserServiceTest {
     @Test
     void willThrowWhenUserUpdateHasNoChanges() {
         // Given
-        int id = 10;
-        User user = new User(
-                id,
-                "Alex",
-                "Jason",
-                "alex@gmail.com",
-                "Jason23");
+        User user = getUserExample();
+        int id = user.getId(); // 10
 
         when(userDao.selectUserById(id)).thenReturn(Optional.of(user));
 
@@ -346,7 +387,9 @@ class UserServiceTest {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getUsername());
+                user.getUsername(),
+                user.getAge(),
+                user.getGender());
 
         // Then
         assertThatThrownBy(() -> underTest.updateUser(id, updateRequest))

@@ -95,6 +95,8 @@ public class UserService {
                 .lastName(request.lastName())
                 .email(request.email())
                 .username(request.username())
+                .age(request.age())
+                .gender(request.gender())
                 .build();
 
         userDao.insertUser(user);
@@ -175,6 +177,16 @@ public class UserService {
             changes = true;
         }
 
+        if (user.getAge() != null && !userUpdateRequest.age().equals(user.getAge())) {
+            user.setAge(userUpdateRequest.age());
+            changes = true;
+        }
+
+        if (user.getGender() != null && !userUpdateRequest.username().equals(user.getGender())) {
+            user.setGender(userUpdateRequest.gender());
+            changes = true;
+        }
+
         if (!changes) {
             log.error("no data changes found");
             throw new RequestValidationException("no data changes found");
@@ -185,6 +197,8 @@ public class UserService {
             usr.setLastName(userUpdateRequest.lastName());
             usr.setEmail(userUpdateRequest.email());
             usr.setUsername(userUpdateRequest.username());
+            usr.setAge(userUpdateRequest.age());
+            usr.setGender(userUpdateRequest.gender());
             // add other fields here
 
             return userDao.updateUser(usr);

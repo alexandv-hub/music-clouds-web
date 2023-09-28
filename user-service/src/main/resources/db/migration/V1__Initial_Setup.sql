@@ -3,5 +3,7 @@ CREATE TABLE _user (
    first_name VARCHAR(255) NOT NULL,
    last_name VARCHAR(255) NOT NULL,
    email VARCHAR(320) NOT NULL UNIQUE,
-   username VARCHAR(150) NOT NULL
+   username VARCHAR(150) NOT NULL UNIQUE,
+   age INTEGER NOT NULL,
+   gender VARCHAR(150) NOT NULL
 );

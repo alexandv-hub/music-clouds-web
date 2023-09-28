@@ -12,6 +12,7 @@ import org.springframework.context.ApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -32,13 +33,8 @@ class UserRepositoryTest extends AbstractTestcontainers {
     @Test
     void existsUserByEmail() {
         // Given
-        String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
+        String email = user.getEmail();
 
         underTest.save(user);
 
@@ -47,6 +43,17 @@ class UserRepositoryTest extends AbstractTestcontainers {
 
         // Then
         assertThat(actual).isTrue();
+    }
+
+    private User getUserFakeExample() {
+        return new User(
+                FAKER.name().firstName(),
+                FAKER.name().lastName(),
+                FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
+                FAKER.name().username(),
+                ThreadLocalRandom.current().nextInt(18, 100),
+                FAKER.options().option("Male", "Female")
+        );
     }
 
     @Test
@@ -64,13 +71,8 @@ class UserRepositoryTest extends AbstractTestcontainers {
     @Test
     void existsUserById() {
         // Given
-        String email = FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID();
-        User user = new User(
-                FAKER.name().firstName(),
-                FAKER.name().lastName(),
-                email,
-                FAKER.name().username()
-        );
+        User user = getUserFakeExample();
+        String email = user.getEmail();
 
         underTest.save(user);
 

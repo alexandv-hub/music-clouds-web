@@ -11,6 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @SpringBootApplication
 @EnableFeignClients(basePackages = "com.musicclouds.clients")
@@ -24,15 +25,20 @@ public class UserApplication {
 	CommandLineRunner runner(UserRepository userRepository) {
 		return args -> {
 			var faker = new Faker();
-			Random random = new Random();
-			Name name = faker.name();
-			String firstName = name.firstName();
-			String lastName = name.lastName();
+			Name fakerName = faker.name();
+			String firstName = fakerName.firstName();
+			String lastName = fakerName.lastName();
+			String username = fakerName.username();
+			Integer age = ThreadLocalRandom.current().nextInt(18, 100);
+			String gender = faker.options().option("Male", "Female");
+
 			User user = new User(
 					firstName,
 					lastName,
 					firstName.toLowerCase() + "." + lastName.toLowerCase() + "@music-clouds.com",
-					random.nextInt(16, 999) + "-test_username"
+					username,
+					age,
+					gender
 			);
 			userRepository.save(user);
 		};

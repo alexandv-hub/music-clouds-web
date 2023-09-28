@@ -22,7 +22,7 @@ public class UserJDBCDataAccessService implements UserDao {
     @Override
     public List<User> selectAllUsers() {
         var sql = """
-                SELECT id, first_name, last_name, email, username
+                SELECT id, first_name, last_name, email, username, age, gender
                 FROM _user
                 """;
 
@@ -32,7 +32,7 @@ public class UserJDBCDataAccessService implements UserDao {
     @Override
     public Optional<User> selectUserById(Integer id) {
         var sql = """
-                SELECT id, first_name, last_name, email, username
+                SELECT id, first_name, last_name, email, username, age, gender
                 FROM _user
                 WHERE id = ?
                 """;
@@ -44,7 +44,7 @@ public class UserJDBCDataAccessService implements UserDao {
     @Override
     public Optional<User> selectUserByEmail(String email) {
         var sql = """
-                SELECT id, first_name, last_name, email, username
+                SELECT id, first_name, last_name, email, username, age, gender
                 FROM _user
                 WHERE email = ?
                 """;
@@ -56,16 +56,18 @@ public class UserJDBCDataAccessService implements UserDao {
     @Override
     public void insertUser(User _user) {
         var sql = """
-                INSERT INTO _user(first_name, last_name, email, username)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO _user(first_name, last_name, email, username, age, gender)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """;
         int result = jdbcTemplate.update(
                 sql,
                 _user.getFirstName(),
                 _user.getLastName(),
                 _user.getEmail(),
-                _user.getUsername()
-        );
+                _user.getUsername(),
+                _user.getAge(),
+                _user.getGender()
+                );
 
         System.out.println("insertUser result " + result);
     }
@@ -140,6 +142,26 @@ public class UserJDBCDataAccessService implements UserDao {
                     update.getId()
             );
             System.out.println("update _user username result = " + result);
+        }
+
+        if (update.getAge() != null) {
+            String sql = "UPDATE _user SET age = ? WHERE id = ?";
+            int result = jdbcTemplate.update(
+                    sql,
+                    update.getAge(),
+                    update.getId()
+            );
+            System.out.println("update _user age result = " + result);
+        }
+
+        if (update.getGender() != null) {
+            String sql = "UPDATE _user SET gender = ? WHERE id = ?";
+            int result = jdbcTemplate.update(
+                    sql,
+                    update.getGender(),
+                    update.getId()
+            );
+            System.out.println("update _user gender result = " + result);
         }
         return selectUserById(update.getId())
                 .orElseThrow(() -> new RuntimeException(

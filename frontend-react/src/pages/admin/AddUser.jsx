@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, Stack } from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+  TextField,
+  Stack,
+  Select,
+  MenuItem, InputLabel
+} from '@mui/material';
 
 function AddUser(props) {
   const [open, setOpen] = useState(false);
@@ -8,6 +18,8 @@ function AddUser(props) {
     lastName: '',
     email: '',
     username: '',
+    age: '',
+    gender: '',
   });
 
   // Open the modal form
@@ -76,6 +88,24 @@ function AddUser(props) {
                   value={user.username}
                   onChange={handleChange}
                 />
+                <TextField
+                  label="age"
+                  name="age"
+                  variant="standard"
+                  value={user.age}
+                  onChange={handleChange}
+                />
+                <InputLabel id="gender-label">Gender</InputLabel>
+                <Select
+                  labelId="gender-label"
+                  label="Gender"
+                  name="gender"
+                  value={user.gender}
+                  onChange={handleChange}
+                >
+                  <MenuItem value={"Male"}>Male</MenuItem>
+                  <MenuItem value={"Female"}>Female</MenuItem>
+                </Select>
               </Stack>
             </DialogContent>
             <DialogActions>
