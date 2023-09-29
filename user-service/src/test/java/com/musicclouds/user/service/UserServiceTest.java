@@ -8,6 +8,7 @@ import com.musicclouds.exception.DuplicateResourceException;
 import com.musicclouds.exception.RequestValidationException;
 import com.musicclouds.exception.ResourceNotFoundException;
 import com.musicclouds.user.dao.UserDao;
+import com.musicclouds.user.domain.Gender;
 import com.musicclouds.user.domain.User;
 import com.musicclouds.user.dto.UserRegistrationRequest;
 import com.musicclouds.user.dto.UserUpdateRequest;
@@ -64,7 +65,7 @@ class UserServiceTest {
                 "john.doe@example.com",
                 "johndoe",
                 35,
-                "Male"
+                Gender.MALE
         );
     }
 
@@ -77,7 +78,7 @@ class UserServiceTest {
                 "alex@gmail.com",
                 "Jason23",
                 23,
-                "Male");
+                Gender.MALE);
     }
 
     @Test
@@ -119,7 +120,7 @@ class UserServiceTest {
                 .email("john.doe@example.com")
                 .username("johndoe")
                 .age(35)
-                .gender("Male")
+                .gender(Gender.MALE)
                 .build();
 
         when(userDao.existsUserWithEmail(anyString())).thenReturn(false);
@@ -158,7 +159,7 @@ class UserServiceTest {
                 "", // empty email
                 "johndoe",
                 30,
-                "Male"
+                Gender.MALE
         );
 
         // Then
@@ -189,7 +190,7 @@ class UserServiceTest {
                 "john@email999", // invalid email
                 "johndoe",
                 35,
-                "Male"
+                Gender.MALE
         );
 
         // Then
@@ -207,7 +208,7 @@ class UserServiceTest {
                 "john.doe@example.com",
                 "", // empty username
                 35,
-                "Male"
+                Gender.MALE
         );
 
         // Then
@@ -270,9 +271,10 @@ class UserServiceTest {
         String newEmail = "alexandro@gmail.com";
         String newFirstName = "Alexandro";
         String newLastName = "Jacobson";
+        String newEmail = "alexandro@gmail.com";
         String newUsername = "Jacobson555";
         Integer newAge = 25;
-        String newGender = "Male";
+        Gender newGender = Gender.MALE;
 
         UserUpdateRequest updateRequest = new UserUpdateRequest(
                 newFirstName,

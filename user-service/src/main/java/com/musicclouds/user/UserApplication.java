@@ -2,6 +2,7 @@ package com.musicclouds.user;
 
 import com.github.javafaker.Faker;
 import com.github.javafaker.Name;
+import com.musicclouds.user.domain.Gender;
 import com.musicclouds.user.domain.User;
 import com.musicclouds.user.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -30,7 +31,7 @@ public class UserApplication {
 			String lastName = fakerName.lastName();
 			String username = fakerName.username();
 			Integer age = ThreadLocalRandom.current().nextInt(18, 100);
-			String gender = faker.options().option("Male", "Female");
+			Gender gender = ThreadLocalRandom.current().nextInt(100) % 2 == 0 ? Gender.MALE : Gender.FEMALE;
 
 			User user = new User(
 					firstName,

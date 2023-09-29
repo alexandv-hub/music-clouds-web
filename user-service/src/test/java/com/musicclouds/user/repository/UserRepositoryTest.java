@@ -1,6 +1,7 @@
 package com.musicclouds.user.repository;
 
 import com.musicclouds.user.AbstractTestcontainers;
+import com.musicclouds.user.domain.Gender;
 import com.musicclouds.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ class UserRepositoryTest extends AbstractTestcontainers {
                 FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
                 FAKER.name().username(),
                 ThreadLocalRandom.current().nextInt(18, 100),
-                FAKER.options().option("Male", "Female")
+                ThreadLocalRandom.current().nextInt(100) % 2 == 0 ? Gender.MALE : Gender.FEMALE
         );
     }
 

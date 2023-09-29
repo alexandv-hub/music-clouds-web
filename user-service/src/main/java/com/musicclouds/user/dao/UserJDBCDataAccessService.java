@@ -66,7 +66,7 @@ public class UserJDBCDataAccessService implements UserDao {
                 _user.getEmail(),
                 _user.getUsername(),
                 _user.getAge(),
-                _user.getGender()
+                _user.getGender().toString()
                 );
 
         System.out.println("insertUser result " + result);
@@ -158,7 +158,7 @@ public class UserJDBCDataAccessService implements UserDao {
             String sql = "UPDATE _user SET gender = ? WHERE id = ?";
             int result = jdbcTemplate.update(
                     sql,
-                    update.getGender(),
+                    update.getGender().toString(),
                     update.getId()
             );
             System.out.println("update _user gender result = " + result);

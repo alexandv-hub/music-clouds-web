@@ -7,6 +7,7 @@ import com.musicclouds.clients.fraud.FraudClient;
 import com.musicclouds.clients.notification.NotificationClient;
 import com.musicclouds.clients.notification.NotificationRequest;
 import com.musicclouds.user.UserApplication;
+import com.musicclouds.user.domain.Gender;
 import com.musicclouds.user.domain.User;
 import com.musicclouds.user.dto.UserRegistrationRequest;
 import com.musicclouds.user.dto.UserUpdateRequest;
@@ -76,7 +77,7 @@ public class UserIT {
         String email = fakerName.lastName() + "-" + UUID.randomUUID() + "@amigoscode.com";
         String username = fakerName.username();
         Integer age = ThreadLocalRandom.current().nextInt(18, 100);
-        String gender = faker.options().option("Male", "Female");
+        Gender gender = ThreadLocalRandom.current().nextInt(100) % 2 == 0 ? Gender.MALE : Gender.FEMALE;
 
         UserRegistrationRequest request = new UserRegistrationRequest(
                 firstName, lastName, email, username, age, gender
@@ -140,7 +141,7 @@ public class UserIT {
         String email = fakerName.lastName() + "-" + UUID.randomUUID() + "@amigoscode.com";
         String username = fakerName.username();
         Integer age = ThreadLocalRandom.current().nextInt(18, 100);
-        String gender = faker.options().option("Male", "Female");
+        Gender gender = ThreadLocalRandom.current().nextInt(100) % 2 == 0 ? Gender.MALE : Gender.FEMALE;
 
         UserRegistrationRequest request = new UserRegistrationRequest(
                 firstName, lastName, email, username, age, gender
@@ -222,7 +223,8 @@ public class UserIT {
         String email = fakerName.lastName() + "-" + UUID.randomUUID() + "@amigoscode.com";
         String username = fakerName.username();
         Integer age = ThreadLocalRandom.current().nextInt(18, 100);
-        String gender = faker.options().option("Male", "Female");
+        Gender gender = ThreadLocalRandom.current().nextInt(100) % 2 == 0 ? Gender.MALE : Gender.FEMALE;
+
 
         UserRegistrationRequest request = new UserRegistrationRequest(
                 firstName, lastName, email, username, age, gender

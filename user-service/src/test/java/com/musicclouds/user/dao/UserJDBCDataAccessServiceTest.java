@@ -1,6 +1,7 @@
 package com.musicclouds.user.dao;
 
 import com.musicclouds.user.AbstractTestcontainers;
+import com.musicclouds.user.domain.Gender;
 import com.musicclouds.user.domain.User;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -51,7 +52,7 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
                 FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
                 FAKER.name().username(),
                 ThreadLocalRandom.current().nextInt(18, 100),
-                FAKER.options().option("Male", "Female")
+                ThreadLocalRandom.current().nextInt(100) % 2 == 0 ? Gender.MALE : Gender.FEMALE
         );
     }
 
@@ -280,7 +281,7 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
         } while (generatedAge == user.getAge());
         update.setAge(generatedAge);
 
-        update.setGender(user.getGender().equals("Male") ? "Female" : "Male");
+        update.setGender(user.getGender().equals(Gender.MALE) ? Gender.FEMALE : Gender.MALE);
 
         underTest.updateUser(update);
 

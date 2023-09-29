@@ -182,7 +182,7 @@ public class UserService {
             changes = true;
         }
 
-        if (user.getGender() != null && !userUpdateRequest.username().equals(user.getGender())) {
+        if (user.getGender() != null && !userUpdateRequest.gender().equals(user.getGender())) {
             user.setGender(userUpdateRequest.gender());
             changes = true;
         }

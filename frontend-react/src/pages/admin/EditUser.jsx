@@ -91,8 +91,8 @@ function EditUser(props) {
               value={user.gender}
               onChange={handleChange}
             >
-              <MenuItem value={"Male"}>Male</MenuItem>
-              <MenuItem value={"Female"}>Female</MenuItem>
+              <MenuItem value={"MALE"}>MALE</MenuItem>
+              <MenuItem value={"FEMALE"}>FEMALE</MenuItem>
             </Select>
           </Stack>
           <br />
