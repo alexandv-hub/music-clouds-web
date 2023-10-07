@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 // Import server url (named import)
 import { REACT_APP_SERVER_URL } from '../../assets/constants.js';
+import { getUsers, deleteUser, updateUser } from '../../services/client.js';
 
 import AddUser from './AddUser';
 import EditUser from './EditUser';
@@ -27,72 +28,80 @@ function UsersManagement() {
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  const fetchUsers = () => {
-    fetch(`${REACT_APP_SERVER_URL}api/v1/users`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => setUsers(data))
-      .catch((error) => {
-        console.error('There was a problem with the fetch operation:', error.message);
-        alert('Something went wrong!');
-      });
+  const fetchUsers = async () => {
+    try {
+      const data = await getUsers();
+      setUsers(data.data); // axios wraps the response data in a .data property
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error.message);
+      alert('Something went wrong!');
+    }
   };
 
   useEffect(() => {
-    fetchUsers();
+    (async () => {
+      try {
+        const data = await getUsers();
+        setUsers(data.data); // axios wraps the response data in a .data property
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error.message);
+        alert('Something went wrong!');
+      }
+    })();
   }, []);
 
   // Update user
-  const updateUser = (user, link) => {
-    console.log('starting UPDATE USER PUT... ', user, link);
-    fetch(
-      link,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user),
-      },
-    )
-      .then((response) => {
+  const updateUserFunc = async (user, url) => {
+    console.log('starting UPDATE USER PUT... ', user, url);
+    console.log('Type of URL:', typeof url, 'Value:', url);
+
+    // Extract the user ID from the URL. This assumes the URL is of the format ".../api/v1/users/<ID>"
+    const userId = url.split('/').pop();
+
+    try {
+      const response = await updateUser(userId, user);
+
+      // Check if the PUT operation was successful using axios response status
+      if (response.status === 200) {
         console.log(response);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        fetchUsers();
+        await fetchUsers();
         setOpen(true);
         setSnackbarMessage('User updated');
-        console.log('successful UPDATE USER PUT ', user, link);
-      })
-      .catch((err) => {
-        console.error(err);
+        console.log('successful UPDATE USER PUT ', user, url);
+      } else {
         alert('Something went wrong!');
-      });
+      }
+    } catch (error) {
+      console.error('There was an error with the UPDATE operation:', error.message);
+      alert('Something went wrong!');
+    }
   };
 
   // Delete user
-  const onDelClick = (url) => {
+  const onDelClick = async (url) => {
     console.log(`starting DELETE... ${url}`);
+
+    // Extract the user ID from the URL. This assumes the URL is of the format ".../api/v1/users/<ID>"
+    const userId = url.split('/').pop();
+
     if (window.confirm('Are you sure to delete?')) {
-      fetch(url, { method: 'DELETE' })
-        .then((response) => {
-          if (response.ok) {
-            console.log(response);
-            fetchUsers();
-            setOpen(true);
-            setSnackbarMessage('User deleted');
-            console.log(`successful DELETE ${url}`);
-          } else {
-            alert('Something went wrong!');
-          }
-        })
-        .catch((err) => console.error(err));
+      try {
+        const response = await deleteUser(userId);
+
+        // Check if the DELETE operation was successful using axios response status
+        if (response.status === 200) {
+          console.log(response);
+          await fetchUsers();
+          setOpen(true);
+          setSnackbarMessage('User deleted');
+          console.log(`successful DELETE ${url}`);
+        } else {
+          alert('Something went wrong!');
+        }
+      } catch (error) {
+        console.error('There was an error with the DELETE operation:', error.message);
+        alert('Something went wrong!');
+      }
     }
   };
 
@@ -101,23 +110,27 @@ function UsersManagement() {
     { field: 'firstName', headerName: 'firstName', width: 150 },
     { field: 'lastName', headerName: 'lastName', width: 150 },
     { field: 'email', headerName: 'email', width: 150 },
+    { field: 'password', headerName: 'password', width: 150 },
     { field: 'username', headerName: 'username', width: 150 },
     { field: 'age', headerName: 'age', width: 80 },
     { field: 'gender', headerName: 'gender', width: 80 },
+    { field: 'role', headerName: 'role', width: 100 },
     {
       field: 'links[0].user.href',
       headerName: '',
+      width: 50,
       sortable: false,
       filterable: false,
       renderCell: (row) => (
         <EditUser
           data={row}
-          updateUser={updateUser}
+          updateUser={updateUserFunc}
         />
       ) },
     {
       field: 'links[0].self',
       headerName: '',
+      width: 70,
       sortable: false,
       filterable: false,
 
@@ -132,9 +145,9 @@ function UsersManagement() {
 
   // Add a new user
   const addUser = (user) => {
-    console.log('starting ADD USER... ', user, 'api/v1/users/register');
+    console.log('starting ADD USER... ', user, '/api/v1/users/auth/register');
     fetch(
-      `${REACT_APP_SERVER_URL}api/v1/users/register`,
+      `${REACT_APP_SERVER_URL}/api/v1/users/auth/register`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -156,11 +169,11 @@ function UsersManagement() {
         }
         return response.json();
       })
-      .then((data) => {
+      .then(() => {
         fetchUsers();
         setOpen(true); // open snackbar
         setSnackbarMessage('User created');
-        console.log('successful ADD USER ', user, 'api/v1/users/register');
+        console.log('successful ADD USER ', user, 'api/v1/users/auth/register');
       })
       .catch((err) => {
         console.error(err);

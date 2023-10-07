@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
-import { DialogActions, DialogContent, DialogTitle, Button, IconButton, Stack, TextField } from '@mui/material/';
+import { DialogActions, DialogContent, DialogTitle, Button, IconButton, Stack, TextField, InputLabel, MenuItem, Select } from '@mui/material/';
 import EditIcon from '@mui/icons-material/Edit';
-import {InputLabel, MenuItem, Select} from "@mui/material";
 
-function EditUser(props) {
+function EditUser({ data, updateUser }) {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState({
-    firstName: '', lastName: '', email: '', username: '', age: '', gender: '',
+    firstName: '', lastName: '', email: '', password: '', username: '', age: '', gender: '', role: '',
   });
 
   // Open the modal form and update the user state
   const handleClickOpen = () => {
     setUser({
-      firstName: props.data.row.firstName,
-      lastName: props.data.row.lastName,
-      email: props.data.row.email,
-      username: props.data.row.username,
-      age: props.data.row.age,
-      gender: props.data.row.gender,
+      firstName: data.row.firstName,
+      lastName: data.row.lastName,
+      email: data.row.email,
+      password: data.row.password,
+      username: data.row.username,
+      age: data.row.age,
+      gender: data.row.gender,
+      role: data.row.role,
     });
     setOpen(true);
   };
@@ -34,7 +35,7 @@ function EditUser(props) {
   };
   // Update user and close modal form
   const handleSave = () => {
-    props.updateUser(user, props.data.id);
+    updateUser(user, data.id);
     handleClose();
   };
 
@@ -70,6 +71,13 @@ function EditUser(props) {
               onChange={handleChange}
             />
             <TextField
+              label="password"
+              name="password"
+              variant="standard"
+              value={user.password}
+              onChange={handleChange}
+            />
+            <TextField
               label="username"
               name="username"
               variant="standard"
@@ -91,8 +99,20 @@ function EditUser(props) {
               value={user.gender}
               onChange={handleChange}
             >
-              <MenuItem value={"MALE"}>MALE</MenuItem>
-              <MenuItem value={"FEMALE"}>FEMALE</MenuItem>
+              <MenuItem value="MALE">MALE</MenuItem>
+              <MenuItem value="FEMALE">FEMALE</MenuItem>
+            </Select>
+            <InputLabel id="role-label">Role</InputLabel>
+            <Select
+              labelId="role-label"
+              label="Role"
+              name="role"
+              value={user.role}
+              onChange={handleChange}
+            >
+              <MenuItem value="ADMIN">ADMIN</MenuItem>
+              <MenuItem value="MANAGER">MANAGER</MenuItem>
+              <MenuItem value="USER">USER</MenuItem>
             </Select>
           </Stack>
           <br />

@@ -8,10 +8,10 @@ import {
   TextField,
   Stack,
   Select,
-  MenuItem, InputLabel
+  MenuItem, InputLabel,
 } from '@mui/material';
 
-function AddUser(props) {
+function AddUser({ addUser }) {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState({
     firstName: '',
@@ -20,6 +20,7 @@ function AddUser(props) {
     username: '',
     age: '',
     gender: '',
+    role: '',
   });
 
   // Open the modal form
@@ -33,17 +34,16 @@ function AddUser(props) {
 
   // Save user and close modal form
   const handleSave = () => {
-    props.addUser(user);
+    addUser(user);
     handleClose();
   };
 
-  function handleChange(event) {
+  const handleChange = (event) => {
     setUser({
       ...user,
-      [event.target.name]:
-      event.target.value,
+      [event.target.name]: event.target.value,
     });
-  }
+  };
 
   return (
     <div>
@@ -82,6 +82,13 @@ function AddUser(props) {
                   onChange={handleChange}
                 />
                 <TextField
+                  label="password"
+                  name="password"
+                  variant="standard"
+                  value={user.password}
+                  onChange={handleChange}
+                />
+                <TextField
                   label="username"
                   name="username"
                   variant="standard"
@@ -103,8 +110,20 @@ function AddUser(props) {
                   value={user.gender}
                   onChange={handleChange}
                 >
-                  <MenuItem value={"MALE"}>MALE</MenuItem>
-                  <MenuItem value={"FEMALE"}>FEMALE</MenuItem>
+                  <MenuItem value="MALE">MALE</MenuItem>
+                  <MenuItem value="FEMALE">FEMALE</MenuItem>
+                </Select>
+                <InputLabel id="role-label">Role</InputLabel>
+                <Select
+                  labelId="role-label"
+                  label="Role"
+                  name="role"
+                  value={user.role}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="ADMIN">ADMIN</MenuItem>
+                  <MenuItem value="MANAGER">MANAGER</MenuItem>
+                  <MenuItem value="USER">USER</MenuItem>
                 </Select>
               </Stack>
             </DialogContent>

@@ -6,23 +6,20 @@ import { Error, Loader, SongCard } from '../components';
 import { useGetSongsAroundYouQuery } from '../redux/services/shazamCore';
 
 const AroundYou = () => {
-  // const [country, setCountry] = ''; // uncomment together with useEffect-axios block of code below
   const [country, setCountry] = useState(import.meta.env.VITE_GEO_API_KEY);
   const [loading, setLoading] = useState(true);
   const { activeSong, isPlaying } = useSelector((state) => state.player);
   const { data, isFetching, error } = useGetSongsAroundYouQuery(country);
 
-  //   useEffect(() => {
-  //     axios
-  //   .get(`https://geo.ipify.org/api/v2/country?apiKey=${import.meta.env.VITE_GEO_API_KEY}`)
-  //   .then((res) => setCountry(res?.data?.location.country))
-  //       .catch((err) => console.log(err))
-  //       .finally(() => setLoading(false));
-  //   }, [country]);
+  // const [country, setCountry] = ''; // uncomment together with useEffect-axios block of code below
 
-  if (isFetching && loading) return <Loader title="Loading Songs around you..." />;
-
-  if (error && country !== '') return <Error />;
+  // useEffect(() => {
+  //   axios
+  //     .get(`https://geo.ipify.org/api/v2/country?apiKey=${import.meta.env.VITE_GEO_API_KEY}`)
+  //     .then((res) => setCountry(res?.data?.location.country))
+  //     .catch((err) => console.log(err))
+  //     .finally(() => setLoading(false));
+  // }, [country]);
 
   return (
     <div className="flex flex-col">
@@ -30,18 +27,22 @@ const AroundYou = () => {
         Around you <span className="font-black">{country}</span>
       </h2>
 
-      <div className="flex flex-wrap sm:justify-start justify-center gap-8">
-        {data?.map((song, i) => (
-          <SongCard
-            key={song.key}
-            song={song}
-            isPlaying={isPlaying}
-            activeSong={activeSong}
-            data={data}
-            i={i}
-          />
-        ))}
-      </div>
+      {isFetching && loading && <Loader title="Loading Songs around you..." />}
+      {!isFetching && !loading && error && <Error />}
+      {!isFetching && !loading && !error && (
+        <div className="flex flex-wrap sm:justify-start justify-center gap-8">
+          {data?.map((song, i) => (
+            <SongCard
+              key={song.key}
+              song={song}
+              isPlaying={isPlaying}
+              activeSong={activeSong}
+              data={data}
+              i={i}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,11 +1,11 @@
 import {
   HiOutlineHashtag,
-  HiOutlineHome,
-  HiOutlineLogin,
+  HiOutlineHome, HiOutlineLogin, HiOutlineLogout,
   HiOutlinePhotograph,
   HiOutlineUserGroup,
   HiOutlineUsers,
 } from 'react-icons/hi';
+import { MdOutlinePodcasts, MdQueueMusic } from 'react-icons/md';
 
 export const genres = [
   { title: 'Pop', value: 'POP' },
@@ -25,12 +25,16 @@ export const genres = [
 ];
 
 export const links = [
-  { name: 'Users management', to: '/users-management', icon: HiOutlineUsers },
-  { name: 'Sign in', to: '/sign-in', icon: HiOutlineLogin },
   { name: 'Discover', to: '/discover', icon: HiOutlineHome },
+  { name: 'Sign in', to: '/sign-in', icon: HiOutlineLogin },
+  { name: 'Users management', to: '/users-management', icon: HiOutlineUsers },
+  { name: 'My Tracks', to: '/my-tracks', icon: MdQueueMusic },
+  { name: 'My Friends', to: '/my-friends', icon: HiOutlineUsers },
+  { name: 'Podcasts', to: '/podcasts', icon: MdOutlinePodcasts },
   { name: 'Around You', to: '/around-you', icon: HiOutlinePhotograph },
   { name: 'Top Artists', to: '/top-artists', icon: HiOutlineUserGroup },
   { name: 'Top Charts', to: '/top-charts', icon: HiOutlineHashtag },
+  { name: 'Logout', to: '/sign-in', icon: HiOutlineLogout },
 ];
 
 export const REACT_APP_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL || 'default_value';

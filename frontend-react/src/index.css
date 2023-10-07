@@ -47,3 +47,11 @@
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+.image-container:hover .track-image {
+  filter: brightness(0.6);
+}
+
+.image-container:hover .play-button {
+  display: block;
+}
