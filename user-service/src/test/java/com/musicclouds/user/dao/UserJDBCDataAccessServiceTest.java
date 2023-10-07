@@ -2,6 +2,7 @@ package com.musicclouds.user.dao;
 
 import com.musicclouds.user.AbstractTestcontainers;
 import com.musicclouds.user.domain.Gender;
+import com.musicclouds.user.domain.Role;
 import com.musicclouds.user.domain.User;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -50,9 +51,11 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
                 FAKER.name().firstName(),
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
+                "password",
                 FAKER.name().username(),
                 ThreadLocalRandom.current().nextInt(18, 100),
-                ThreadLocalRandom.current().nextInt(100) % 2 == 0 ? Gender.MALE : Gender.FEMALE
+                ThreadLocalRandom.current().nextInt(100) % 2 == 0 ? Gender.MALE : Gender.FEMALE,
+                Role.ADMIN
         );
     }
 
@@ -121,6 +124,43 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
 
         // Then
         assertThat(actual).isFalse();
+    }
+
+    @Test
+    void selectUserByUsernameOrEmailTest() {
+        // Given
+        User user = getUserFakeExample();
+        underTest.insertUser(user);
+
+        // The email and username we'll be using to query
+        String email = user.getEmail();
+        String username = user.getUsername();
+
+        // When
+        // Searching by email
+        Optional<User> userByEmailOptional = underTest.selectUserByUsernameOrEmail(email);
+
+        // Searching by username
+        Optional<User> userByUsernameOptional = underTest.selectUserByUsernameOrEmail(username);
+
+        // Searching by non-existing identifier
+        Optional<User> userByNonExistentOptional = underTest.selectUserByUsernameOrEmail("nonexistent");
+
+        // Then
+        // Assert that when querying by email, we get the user
+        assertThat(userByEmailOptional).isPresent().hasValueSatisfying(c -> {
+            assertThat(c.getEmail()).isEqualTo(email);
+            assertThat(c.getUsername()).isEqualTo(username);
+        });
+
+        // Assert that when querying by username, we get the user
+        assertThat(userByUsernameOptional).isPresent().hasValueSatisfying(c -> {
+            assertThat(c.getEmail()).isEqualTo(email);
+            assertThat(c.getUsername()).isEqualTo(username);
+        });
+
+        // Assert that when querying by non-existent identifier, we don't get a user
+        assertThat(userByNonExistentOptional).isNotPresent();
     }
 
     @Test
@@ -273,6 +313,7 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
         update.setFirstName("foo");
         update.setLastName("foo");
         update.setEmail(UUID.randomUUID().toString());
+        update.setPassword("password");
         update.setUsername(UUID.randomUUID().toString());
 
         int generatedAge;
@@ -282,6 +323,7 @@ class UserJDBCDataAccessServiceTest extends AbstractTestcontainers {
         update.setAge(generatedAge);
 
         update.setGender(user.getGender().equals(Gender.MALE) ? Gender.FEMALE : Gender.MALE);
+        update.setRole(user.getRole().equals(Role.ADMIN) ? Role.USER : Role.ADMIN);
 
         underTest.updateUser(update);
 

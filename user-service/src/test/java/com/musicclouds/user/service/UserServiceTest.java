@@ -9,6 +9,7 @@ import com.musicclouds.exception.RequestValidationException;
 import com.musicclouds.exception.ResourceNotFoundException;
 import com.musicclouds.user.dao.UserDao;
 import com.musicclouds.user.domain.Gender;
+import com.musicclouds.user.domain.Role;
 import com.musicclouds.user.domain.User;
 import com.musicclouds.user.dto.UserRegistrationRequest;
 import com.musicclouds.user.dto.UserUpdateRequest;
@@ -20,6 +21,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -43,9 +45,12 @@ class UserServiceTest {
     @InjectMocks
     private UserService underTest;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @BeforeEach
     void setUp() {
-        underTest = new UserService(userDao, fraudClient, notificationClient);
+        underTest = new UserService(userDao, fraudClient, notificationClient, passwordEncoder);
     }
 
     @Test
@@ -63,9 +68,11 @@ class UserServiceTest {
                 "John",
                 "Doe",
                 "john.doe@example.com",
+                "password",
                 "johndoe",
                 35,
-                Gender.MALE
+                Gender.MALE,
+                Role.USER
         );
     }
 
@@ -76,9 +83,12 @@ class UserServiceTest {
                 "Alex",
                 "Jason",
                 "alex@gmail.com",
+                "password",
                 "Jason23",
                 23,
-                Gender.MALE);
+                Gender.MALE,
+                Role.USER
+        );
     }
 
     @Test
@@ -114,13 +124,18 @@ class UserServiceTest {
         // Given
         UserRegistrationRequest request = getUserRegistrationRequestExample();
 
+        String passwordHash = "¢5554ml;f;lsd";
+        when(passwordEncoder.encode(request.password())).thenReturn(passwordHash);
+
         User user = User.builder()
                 .firstName("John")
                 .lastName("Doe")
                 .email("john.doe@example.com")
+                .password(passwordHash)
                 .username("johndoe")
                 .age(35)
                 .gender(Gender.MALE)
+                .role(Role.USER)
                 .build();
 
         when(userDao.existsUserWithEmail(anyString())).thenReturn(false);
@@ -157,9 +172,11 @@ class UserServiceTest {
                 "John",
                 "Doe",
                 "", // empty email
+                "password",
                 "johndoe",
                 30,
-                Gender.MALE
+                Gender.MALE,
+                Role.ADMIN
         );
 
         // Then
@@ -188,9 +205,11 @@ class UserServiceTest {
                 "John",
                 "Doe",
                 "john@email999", // invalid email
+                "password",
                 "johndoe",
                 35,
-                Gender.MALE
+                Gender.MALE,
+                Role.ADMIN
         );
 
         // Then
@@ -206,9 +225,11 @@ class UserServiceTest {
                 "John",
                 "Doe",
                 "john.doe@example.com",
+                "password",
                 "", // empty username
                 35,
-                Gender.MALE
+                Gender.MALE,
+                Role.ADMIN
         );
 
         // Then
@@ -268,21 +289,24 @@ class UserServiceTest {
 
         when(userDao.selectUserById(id)).thenReturn(Optional.of(user));
 
-        String newEmail = "alexandro@gmail.com";
         String newFirstName = "Alexandro";
         String newLastName = "Jacobson";
         String newEmail = "alexandro@gmail.com";
+        String newPassword = "newPassword";
         String newUsername = "Jacobson555";
         Integer newAge = 25;
         Gender newGender = Gender.MALE;
+        Role newRole = Role.USER;
 
         UserUpdateRequest updateRequest = new UserUpdateRequest(
                 newFirstName,
                 newLastName,
                 newEmail,
+                newPassword,
                 newUsername,
                 newAge,
-                newGender);
+                newGender,
+                newRole);
 
         when(userDao.existsUserWithEmail(newEmail)).thenReturn(false);
 
@@ -300,9 +324,11 @@ class UserServiceTest {
                 newFirstName,
                 newLastName,
                 newEmail,
+                newPassword,
                 newUsername,
                 newAge,
-                newGender);
+                newGender,
+                newRole);
 
         // And here we are comparing the captured user to the expected user
         assertThat(capturedUser)
@@ -324,9 +350,11 @@ class UserServiceTest {
                 newFirstName, // new
                 user.getLastName(),
                 user.getEmail(),
+                user.getPassword(),
                 user.getUsername(),
                 user.getAge(),
-                user.getGender());
+                user.getGender(),
+                user.getRole());
 
         // When
         underTest.updateUser(id, updateRequest);
@@ -342,9 +370,11 @@ class UserServiceTest {
                 newFirstName, // new
                 user.getLastName(),
                 user.getEmail(),
+                user.getPassword(),
                 user.getUsername(),
                 user.getAge(),
-                user.getGender());
+                user.getGender(),
+                user.getRole());
 
         // Compare capturedUser with expectedUser
         assertThat(capturedUser)
@@ -365,9 +395,11 @@ class UserServiceTest {
                 user.getFirstName(),
                 user.getLastName(),
                 newEmail, // new
+                user.getPassword(),
                 user.getUsername(),
                 user.getAge(),
-                user.getGender());
+                user.getGender(),
+                user.getRole());
 
         when(userDao.existsUserWithEmail(newEmail)).thenReturn(true);
 
@@ -389,9 +421,11 @@ class UserServiceTest {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
+                user.getPassword(),
                 user.getUsername(),
                 user.getAge(),
-                user.getGender());
+                user.getGender(),
+                user.getRole());
 
         // Then
         assertThatThrownBy(() -> underTest.updateUser(id, updateRequest))

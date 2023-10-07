@@ -1,7 +1,6 @@
 package com.musicclouds.user.controller;
 
 import com.musicclouds.user.domain.User;
-import com.musicclouds.user.dto.UserRegistrationRequest;
 import com.musicclouds.user.dto.UserUpdateRequest;
 import com.musicclouds.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +26,6 @@ public class UserController {
     private String API_GATEWAY_URL;
 
     private final UserService userService;
-
-    @PostMapping("/register")
-    public void registerUser(@RequestBody UserRegistrationRequest userRegistrationRequest) {
-        log.info("New user registration {}", userRegistrationRequest);
-        userService.registerUser(userRegistrationRequest);
-        log.info("Successfully registered new user with email {}", userRegistrationRequest.email());
-    }
 
     @GetMapping
     public List<EntityModel<User>> getUsers() {

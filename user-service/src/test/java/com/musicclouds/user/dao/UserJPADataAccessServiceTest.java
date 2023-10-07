@@ -2,6 +2,7 @@ package com.musicclouds.user.dao;
 
 import com.musicclouds.user.AbstractTestcontainers;
 import com.musicclouds.user.domain.Gender;
+import com.musicclouds.user.domain.Role;
 import com.musicclouds.user.domain.User;
 import com.musicclouds.user.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -10,10 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class UserJPADataAccessServiceTest extends AbstractTestcontainers {
 
@@ -58,10 +62,46 @@ class UserJPADataAccessServiceTest extends AbstractTestcontainers {
                 FAKER.name().firstName(),
                 FAKER.name().lastName(),
                 FAKER.internet().safeEmailAddress() + "-" + UUID.randomUUID(),
+                "password",
                 FAKER.name().username(),
                 ThreadLocalRandom.current().nextInt(18, 100),
-                ThreadLocalRandom.current().nextInt(100) % 2 == 0 ? Gender.MALE : Gender.FEMALE
+                ThreadLocalRandom.current().nextInt(100) % 2 == 0 ? Gender.MALE : Gender.FEMALE,
+                Role.ADMIN
         );
+    }
+
+    @Test
+    void selectUserByUsernameOrEmailTest() {
+        // Given
+        User user = getUserFakeExample();
+        String email = user.getEmail();
+        String username = user.getUsername();
+
+        when(userRepository.findByUsernameOrEmail(email, email)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsernameOrEmail(username, username)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsernameOrEmail("nonexistent", "nonexistent")).thenReturn(Optional.empty());
+
+        // When
+        Optional<User> userByEmailOptional = underTest.selectUserByUsernameOrEmail(email);
+        Optional<User> userByUsernameOptional = underTest.selectUserByUsernameOrEmail(username);
+        Optional<User> userByNonExistentOptional = underTest.selectUserByUsernameOrEmail("nonexistent");
+
+        // Then
+        assertThat(userByEmailOptional).isPresent().hasValueSatisfying(c -> {
+            assertThat(c.getEmail()).isEqualTo(email);
+            assertThat(c.getUsername()).isEqualTo(username);
+        });
+
+        assertThat(userByUsernameOptional).isPresent().hasValueSatisfying(c -> {
+            assertThat(c.getEmail()).isEqualTo(email);
+            assertThat(c.getUsername()).isEqualTo(username);
+        });
+
+        assertThat(userByNonExistentOptional).isNotPresent();
+
+        verify(userRepository).findByUsernameOrEmail(email, email);
+        verify(userRepository).findByUsernameOrEmail(username, username);
+        verify(userRepository).findByUsernameOrEmail("nonexistent", "nonexistent");
     }
 
     @Test

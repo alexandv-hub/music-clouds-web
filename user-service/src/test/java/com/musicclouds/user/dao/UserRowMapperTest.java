@@ -2,6 +2,7 @@ package com.musicclouds.user.dao;
 
 import com.musicclouds.user.AbstractTestcontainers;
 import com.musicclouds.user.domain.Gender;
+import com.musicclouds.user.domain.Role;
 import com.musicclouds.user.domain.User;
 import org.junit.jupiter.api.Test;
 
@@ -25,9 +26,11 @@ class UserRowMapperTest extends AbstractTestcontainers {
         when(resultSet.getString("first_name")).thenReturn("Jamila");
         when(resultSet.getString("last_name")).thenReturn("Jason");
         when(resultSet.getString("email")).thenReturn("jamila@gmail.com");
+        when(resultSet.getString("password")).thenReturn("password");
         when(resultSet.getString("username")).thenReturn("Jamila19");
         when(resultSet.getInt("age")).thenReturn(19);
         when(resultSet.getString("gender")).thenReturn(Gender.FEMALE.toString());
+        when(resultSet.getString("role")).thenReturn(Role.ADMIN.name());
 
         // When
         User actual = userRowMapper.mapRow(resultSet, 1);
@@ -38,9 +41,11 @@ class UserRowMapperTest extends AbstractTestcontainers {
                 "Jamila",
                 "Jason",
                 "jamila@gmail.com",
+                "password",
                 "Jamila19",
                 19,
-                Gender.FEMALE
+                Gender.FEMALE,
+                Role.ADMIN
         );
         assertThat(actual).isEqualTo(expected);
     }

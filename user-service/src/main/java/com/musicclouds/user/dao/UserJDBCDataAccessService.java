@@ -1,6 +1,7 @@
 package com.musicclouds.user.dao;
 
 import com.musicclouds.user.domain.User;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -22,7 +23,7 @@ public class UserJDBCDataAccessService implements UserDao {
     @Override
     public List<User> selectAllUsers() {
         var sql = """
-                SELECT id, first_name, last_name, email, username, age, gender
+                SELECT id, first_name, last_name, email, password, username, age, gender, role
                 FROM _user
                 """;
 
@@ -32,7 +33,7 @@ public class UserJDBCDataAccessService implements UserDao {
     @Override
     public Optional<User> selectUserById(Integer id) {
         var sql = """
-                SELECT id, first_name, last_name, email, username, age, gender
+                SELECT id, first_name, last_name, email, password, username, age, gender, role
                 FROM _user
                 WHERE id = ?
                 """;
@@ -44,7 +45,7 @@ public class UserJDBCDataAccessService implements UserDao {
     @Override
     public Optional<User> selectUserByEmail(String email) {
         var sql = """
-                SELECT id, first_name, last_name, email, username, age, gender
+                SELECT id, first_name, last_name, email, password, username, age, gender, role
                 FROM _user
                 WHERE email = ?
                 """;
@@ -53,20 +54,34 @@ public class UserJDBCDataAccessService implements UserDao {
                 .findFirst();
     }
 
+    public Optional<User> selectUserByUsernameOrEmail(String identifier) {
+        final String sql = "SELECT * FROM _user WHERE username = ? OR email = ?";
+        try {
+            return jdbcTemplate.query(sql, userRowMapper, identifier, identifier)
+                    .stream()
+                    .findFirst();
+//            return Optional.ofNullable(userDetails);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     @Override
     public void insertUser(User _user) {
         var sql = """
-                INSERT INTO _user(first_name, last_name, email, username, age, gender)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO _user(first_name, last_name, email, password, username, age, gender, role)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         int result = jdbcTemplate.update(
                 sql,
                 _user.getFirstName(),
                 _user.getLastName(),
                 _user.getEmail(),
+                _user.getPassword(),
                 _user.getUsername(),
                 _user.getAge(),
-                _user.getGender().toString()
+                _user.getGender().name(),
+                _user.getRole().name()
                 );
 
         System.out.println("insertUser result " + result);
@@ -163,6 +178,17 @@ public class UserJDBCDataAccessService implements UserDao {
             );
             System.out.println("update _user gender result = " + result);
         }
+
+        if (update.getRole() != null) {
+            String sql = "UPDATE _user SET role = ? WHERE id = ?";
+            int result = jdbcTemplate.update(
+                    sql,
+                    update.getRole().name(),
+                    update.getId()
+            );
+            System.out.println("update _user role result = " + result);
+        }
+
         return selectUserById(update.getId())
                 .orElseThrow(() -> new RuntimeException(
                         "User not found after update for ID: " + update.getId()));

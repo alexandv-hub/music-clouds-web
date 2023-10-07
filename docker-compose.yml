@@ -47,34 +47,6 @@ services:
     networks:
       - my-docker-network
 
-  user-service:
-    build:
-      context: ./user-service
-      dockerfile: Dockerfile
-    # distributed tracing env variables
-    environment:
-      - OTEL_SERVICE_NAME=user-service
-      - OTEL_METRICS_EXPORTER=none
-      - OTEL_TRACES_EXPORTER=jaeger
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
-    ports:
-      - "8080:8080"
-    depends_on:
-        - music_clouds_db
-        - eureka-server-service
-        - apigw-service
-    networks:
-      - my-docker-network
-
-  frontend-react:
-    build: ./frontend-react
-    ports:
-      - "3000:3000"
-    depends_on:
-      - apigw-service
-    networks:
-      - my-docker-network
-
   fraud-service:
     build:
       context: ./fraud-service
@@ -112,6 +84,35 @@ services:
       - apigw-service
     networks:
       - my-docker-network
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    # distributed tracing env variables
+    environment:
+      - OTEL_SERVICE_NAME=user-service
+      - OTEL_METRICS_EXPORTER=none
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
+    ports:
+      - "8080:8080"
+    depends_on:
+        - music_clouds_db
+        - eureka-server-service
+        - apigw-service
+    networks:
+      - my-docker-network
+
+  frontend-react:
+    build: ./frontend-react
+    ports:
+      - "3000:3000"
+    depends_on:
+      - apigw-service
+    networks:
+      - my-docker-network
+
 
 networks:
   my-docker-network:

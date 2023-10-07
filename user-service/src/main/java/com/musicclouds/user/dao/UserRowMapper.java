@@ -1,6 +1,7 @@
 package com.musicclouds.user.dao;
 
 import com.musicclouds.user.domain.Gender;
+import com.musicclouds.user.domain.Role;
 import com.musicclouds.user.domain.User;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -18,9 +19,11 @@ public class UserRowMapper implements RowMapper<User> {
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("email"),
+                rs.getString("password"),
                 rs.getString("username"),
                 rs.getInt("age"),
-                Gender.valueOf(rs.getString("gender").toUpperCase())
+                Gender.valueOf(rs.getString("gender").toUpperCase()),
+                Role.valueOf(rs.getString("role").toUpperCase())
         );
     }
 }
